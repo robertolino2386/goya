@@ -5,7 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Goya | Gestão de Projetos e Antecipações</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+    /* Tipografia oficial Goya.
+       Coloque os arquivos de fonte enviados por você em /fonts no repositório. */
+    @font-face{font-family:"Caviar Dreams";src:local("Caviar Dreams"),url("fonts/CaviarDreams.ttf") format("truetype");font-weight:400;font-style:normal;font-display:swap}
+    @font-face{font-family:"Caviar Dreams";src:local("Caviar Dreams Bold"),url("fonts/CaviarDreams_Bold.ttf") format("truetype");font-weight:700;font-style:normal;font-display:swap}
+    @font-face{font-family:"Caviar Dreams";src:local("Caviar Dreams Italic"),url("fonts/CaviarDreams_Italic.ttf") format("truetype");font-weight:400;font-style:italic;font-display:swap}
+    @font-face{font-family:"Montserrat";src:local("Montserrat"),url("fonts/Montserrat-Regular.ttf") format("truetype");font-weight:400;font-style:normal;font-display:swap}
+    @font-face{font-family:"Montserrat";src:local("Montserrat Medium"),url("fonts/Montserrat-Medium.ttf") format("truetype");font-weight:500;font-style:normal;font-display:swap}
+    @font-face{font-family:"Montserrat";src:local("Montserrat SemiBold"),url("fonts/Montserrat-SemiBold.ttf") format("truetype");font-weight:600;font-style:normal;font-display:swap}
+    @font-face{font-family:"Montserrat";src:local("Montserrat Bold"),url("fonts/Montserrat-Bold.ttf") format("truetype");font-weight:700;font-style:normal;font-display:swap}
+    @font-face{font-family:"Montserrat";src:local("Montserrat ExtraBold"),url("fonts/Montserrat-ExtraBold.ttf") format("truetype");font-weight:800;font-style:normal;font-display:swap}
+    @font-face{font-family:"Novecento Sans Wide";src:local("Novecento Book"),url("fonts/Novecento Book.otf") format("opentype");font-weight:400;font-style:normal;font-display:swap}
+    @font-face{font-family:"Novecento Sans Wide";src:local("Novecento Bold"),url("fonts/Novecento Bold.otf") format("opentype");font-weight:700;font-style:normal;font-display:swap}
 
     :root{
       --goya-marsala:#8A391B;
@@ -59,6 +70,18 @@
     }
     button,input,select,textarea{font:inherit}
     button{transition:.2s ease}
+    h1,h2,h3,.identity-banner h2,.detail-hero h2,.modal-head strong{
+      font-family:"Caviar Dreams","Montserrat",Arial,sans-serif;
+      letter-spacing:.01em;
+    }
+    .brand,.menu button,.btn,th,.badge,.eyebrow,.detail-code,.field label,.kpi span,.detail-kpi span{
+      font-family:"Montserrat",Arial,sans-serif;
+    }
+    .kpi strong,.detail-kpi strong,.detail-hero-side strong,.finance-step strong,.detail-list-item .value{
+      font-family:"Novecento Sans Wide","Montserrat",Arial,sans-serif;
+      letter-spacing:.015em;
+    }
+
     .app{display:flex;min-height:100vh}
 
     .sidebar{
@@ -150,9 +173,9 @@
       z-index:20;
     }
     .topbar h1{
-      font-size:20px;
+      font-size:21px;
       margin:0;
-      font-weight:600;
+      font-weight:400;
       letter-spacing:-.02em;
     }
     .topbar p{
@@ -205,9 +228,9 @@
     }
     .identity-banner h2{
       margin:0;
-      font-size:28px;
-      line-height:1.15;
-      font-weight:500;
+      font-size:29px;
+      line-height:1.16;
+      font-weight:400;
       max-width:720px;
     }
     .identity-banner p{
@@ -346,8 +369,8 @@
     }
     .title-row h2{
       margin:0;
-      font-size:22px;
-      font-weight:500;
+      font-size:23px;
+      font-weight:400;
       letter-spacing:-.03em;
     }
     .title-row p{
@@ -476,8 +499,8 @@
     }
     .detail-hero h2{
       margin:0;
-      font-size:28px;
-      font-weight:500;
+      font-size:29px;
+      font-weight:400;
       letter-spacing:-.03em;
     }
     .detail-hero .meta{
