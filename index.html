@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goya | Gestão de Projetos e Antecipações</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+
+    :root{
+      --goya-marsala:#8A391B;
+      --goya-blue:#29475C;
+      --goya-ink:#1D1D1B;
+      --goya-paper:#F6F3EF;
+      --goya-white:#FFFFFF;
+
+      --bg:#F6F3EF;
+      --card:#FFFFFF;
+      --card-2:#FBF9F6;
+      --text:#231F20;
+      --muted:#736C67;
+      --border:#DDD5CE;
+      --primary:#8A391B;
+      --primary-strong:#6F2D16;
+      --secondary:#29475C;
+      --sidebar:#FFFFFF;
+      --success:#2F6B55;
+      --warning:#A56722;
+      --danger:#A43A3A;
+      --shadow:0 14px 40px rgba(67,42,32,.07);
+      --radius:18px;
+    }
+
+    body.dark{
+      --bg:#12181C;
+      --card:#182128;
+      --card-2:#1C2730;
+      --text:#F6F3EF;
+      --muted:#B9B1AA;
+      --border:#31414C;
+      --primary:#B85C39;
+      --primary-strong:#C86B49;
+      --secondary:#6E91A8;
+      --sidebar:#10171C;
+      --success:#72B092;
+      --warning:#D9A35D;
+      --danger:#E17878;
+      --shadow:0 18px 50px rgba(0,0,0,.28);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:"Montserrat",Arial,Helvetica,sans-serif;
+      transition:background .25s,color .25s;
+    }
+    button,input,select,textarea{font:inherit}
+    button{transition:.2s ease}
+    .app{display:flex;min-height:100vh}
+
+    .sidebar{
+      width:264px;
+      background:var(--sidebar);
+      border-right:1px solid var(--border);
+      padding:26px 18px 24px;
+      position:fixed;
+      inset:0 auto 0 0;
+      z-index:30;
+    }
+
+    .brand{
+      min-height:130px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:0 0 22px;
+      padding:16px 18px 22px;
+      border-bottom:1px solid var(--border);
+    }
+    .brand img{
+      width:118px;
+      max-height:106px;
+      object-fit:contain;
+      display:block;
+    }
+    .brand .logo-dark{display:none}
+    body.dark .brand .logo-light{display:none}
+    body.dark .brand .logo-dark{display:block}
+
+    .menu{display:grid;gap:6px}
+    .menu button{
+      border:0;
+      background:transparent;
+      color:var(--muted);
+      padding:12px 13px;
+      border-radius:12px;
+      text-align:left;
+      cursor:pointer;
+      font-weight:600;
+      font-size:13px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .menu button::before{
+      content:"";
+      width:4px;
+      height:18px;
+      border-radius:99px;
+      background:transparent;
+      flex:0 0 auto;
+    }
+    .menu button.active,
+    .menu button:hover{
+      background:color-mix(in srgb,var(--primary) 8%,transparent);
+      color:var(--primary);
+    }
+    .menu button.active::before{background:var(--primary)}
+
+    .sidebar-foot{
+      position:absolute;
+      left:18px;
+      right:18px;
+      bottom:20px;
+      padding-top:16px;
+      border-top:1px solid var(--border);
+      font-size:10px;
+      line-height:1.5;
+      color:var(--muted);
+      letter-spacing:.03em;
+    }
+
+    .main{margin-left:264px;width:calc(100% - 264px)}
+
+    .topbar{
+      min-height:82px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:14px 30px;
+      border-bottom:1px solid var(--border);
+      background:color-mix(in srgb,var(--bg) 90%,transparent);
+      backdrop-filter:blur(12px);
+      position:sticky;
+      top:0;
+      z-index:20;
+    }
+    .topbar h1{
+      font-size:20px;
+      margin:0;
+      font-weight:600;
+      letter-spacing:-.02em;
+    }
+    .topbar p{
+      margin:5px 0 0;
+      color:var(--muted);
+      font-size:11px;
+      letter-spacing:.02em;
+    }
+
+    .top-actions{display:flex;align-items:center;gap:10px}
+    .theme-hint{font-size:10px;color:var(--muted)}
+    .icon-btn{
+      width:38px;
+      height:38px;
+      border-radius:50%;
+      border:1px solid var(--border);
+      background:var(--card);
+      color:var(--text);
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+    }
+    .icon-btn:hover{border-color:var(--primary);color:var(--primary)}
+
+    .content{padding:30px}
+
+    .identity-banner{
+      display:grid;
+      grid-template-columns:1.4fr .6fr;
+      min-height:170px;
+      margin-bottom:22px;
+      overflow:hidden;
+      border:1px solid var(--border);
+      background:var(--card);
+      box-shadow:var(--shadow);
+    }
+    .identity-banner .copy{
+      padding:28px 30px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+    .identity-banner .eyebrow{
+      color:var(--primary);
+      font-size:10px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      margin-bottom:10px;
+    }
+    .identity-banner h2{
+      margin:0;
+      font-size:28px;
+      line-height:1.15;
+      font-weight:500;
+      max-width:720px;
+    }
+    .identity-banner p{
+      margin:10px 0 0;
+      font-size:12px;
+      line-height:1.7;
+      color:var(--muted);
+      max-width:760px;
+    }
+    .identity-banner .blocks{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+    }
+    .identity-banner .marsala{background:var(--goya-marsala)}
+    .identity-banner .blue{background:var(--goya-blue)}
+
+    .grid{display:grid;gap:16px}
+    .kpis{grid-template-columns:repeat(5,minmax(0,1fr))}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .kpi{
+      padding:18px 18px 17px;
+      border-top:3px solid transparent;
+    }
+    .kpi:nth-child(1),.kpi:nth-child(3){border-top-color:var(--primary)}
+    .kpi:nth-child(2),.kpi:nth-child(4){border-top-color:var(--secondary)}
+    .kpi:nth-child(5){border-top-color:var(--text)}
+    .kpi span{
+      font-size:9px;
+      color:var(--muted);
+      font-weight:700;
+      letter-spacing:.08em;
+    }
+    .kpi strong{
+      display:block;
+      font-size:22px;
+      margin-top:9px;
+      font-weight:600;
+      letter-spacing:-.03em;
+    }
+    .kpi small{
+      display:block;
+      margin-top:6px;
+      color:var(--muted);
+      font-size:10px;
+      line-height:1.45;
+    }
+
+    .toolbar{
+      padding:15px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin:16px 0;
+    }
+    .toolbar .grow{flex:1}
+
+    input,select,textarea{
+      width:100%;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:var(--card);
+      color:var(--text);
+      padding:11px 12px;
+      outline:none;
+      font-size:12px;
+    }
+    input:focus,select:focus,textarea:focus{
+      border-color:var(--primary);
+      box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 10%,transparent);
+    }
+    .toolbar input,.toolbar select{width:auto;min-width:185px}
+
+    .btn{
+      border:0;
+      border-radius:10px;
+      padding:11px 15px;
+      font-weight:700;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-primary:hover{background:var(--primary-strong)}
+    .btn-secondary{background:var(--secondary);color:#fff}
+    .btn-light{background:var(--card);border:1px solid var(--border);color:var(--text)}
+    .btn-light:hover{border-color:var(--primary);color:var(--primary)}
+    .btn-danger{background:color-mix(in srgb,var(--danger) 10%,transparent);color:var(--danger)}
+
+    .section{display:none}
+    .section.active{display:block}
+
+    .table-card{overflow:hidden}
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse;min-width:980px}
+    th,td{
+      padding:13px 14px;
+      border-bottom:1px solid var(--border);
+      font-size:12px;
+      text-align:left;
+      vertical-align:middle;
+    }
+    th{
+      color:var(--muted);
+      font-size:9px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      background:var(--card-2);
+      font-weight:700;
+    }
+    tr:hover td{background:color-mix(in srgb,var(--secondary) 4%,transparent)}
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      padding:6px 9px;
+      border-radius:999px;
+      font-size:9px;
+      font-weight:700;
+      letter-spacing:.03em;
+    }
+    .badge.open{background:color-mix(in srgb,var(--warning) 12%,transparent);color:var(--warning)}
+    .badge.progress{background:color-mix(in srgb,var(--secondary) 12%,transparent);color:var(--secondary)}
+    .badge.done{background:color-mix(in srgb,var(--success) 12%,transparent);color:var(--success)}
+
+    .title-row{
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:14px;
+    }
+    .title-row h2{
+      margin:0;
+      font-size:22px;
+      font-weight:500;
+      letter-spacing:-.03em;
+    }
+    .title-row p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:11px;
+      line-height:1.5;
+    }
+
+    .two-col{grid-template-columns:1.2fr .8fr}
+    .panel{padding:19px}
+    .progress{
+      height:7px;
+      background:var(--border);
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .progress i{display:block;height:100%;background:var(--primary)}
+    .mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+    .mini{padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--card-2)}
+    .mini span{font-size:10px;color:var(--muted)}
+    .mini strong{display:block;margin-top:5px}
+
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(10,13,15,.62);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      z-index:100;
+    }
+    .modal.show{display:flex}
+    .modal-box{
+      width:min(950px,100%);
+      max-height:92vh;
+      overflow:auto;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow:0 25px 80px rgba(0,0,0,.35);
+    }
+    .modal-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:18px 20px;
+      border-bottom:1px solid var(--border);
+      position:sticky;
+      top:0;
+      background:var(--card);
+      z-index:2;
+    }
+    .modal-head strong{font-weight:600}
+    .modal-body{padding:20px}
+    .form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .field label{
+      display:block;
+      font-size:9px;
+      color:var(--muted);
+      font-weight:700;
+      margin-bottom:6px;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+    }
+    .span2{grid-column:span 2}.span3{grid-column:span 3}
+    .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+    .tabs{display:flex;gap:8px;margin:14px 0}
+    .tabs button{
+      padding:9px 12px;
+      border:1px solid var(--border);
+      background:var(--card);
+      color:var(--muted);
+      border-radius:10px;
+      cursor:pointer;
+    }
+    .tabs button.active{color:var(--primary);border-color:var(--primary)}
+
+    .note{
+      padding:13px 14px;
+      border-left:3px solid var(--primary);
+      background:color-mix(in srgb,var(--primary) 6%,var(--card));
+      border-radius:10px;
+      color:var(--muted);
+      font-size:11px;
+      line-height:1.55;
+    }
+    .actions{display:flex;gap:6px}
+    .actions button{
+      border:1px solid var(--border);
+      background:var(--card);
+      border-radius:8px;
+      padding:6px 8px;
+      cursor:pointer;
+      color:var(--text);
+      font-size:10px;
+    }
+    .actions button:hover{border-color:var(--primary);color:var(--primary)}
+    .empty{text-align:center;padding:34px;color:var(--muted);font-size:12px}
+
+
+    .detail-hero{
+      display:grid;
+      grid-template-columns:1.35fr .65fr;
+      border:1px solid var(--border);
+      background:var(--card);
+      min-height:190px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+    }
+    .detail-hero-main{
+      padding:26px 28px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+    .detail-code{
+      color:var(--primary);
+      font-size:10px;
+      font-weight:700;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      margin-bottom:9px;
+    }
+    .detail-hero h2{
+      margin:0;
+      font-size:28px;
+      font-weight:500;
+      letter-spacing:-.03em;
+    }
+    .detail-hero .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px 18px;
+      margin-top:12px;
+      color:var(--muted);
+      font-size:11px;
+    }
+    .detail-hero-side{
+      display:grid;
+      grid-template-rows:1fr 1fr;
+      color:#fff;
+    }
+    .detail-hero-side .top{
+      background:var(--goya-marsala);
+      padding:22px;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+    }
+    .detail-hero-side .bottom{
+      background:var(--goya-blue);
+      padding:22px;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+    }
+    .detail-hero-side span{
+      font-size:9px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      opacity:.78;
+    }
+    .detail-hero-side strong{
+      margin-top:5px;
+      font-size:20px;
+      font-weight:600;
+    }
+
+    .detail-selector{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin-bottom:16px;
+      padding:14px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:14px;
+    }
+    .detail-selector label{
+      font-size:10px;
+      color:var(--muted);
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      white-space:nowrap;
+    }
+    .detail-selector select{max-width:480px}
+
+    .detail-kpis{
+      display:grid;
+      grid-template-columns:repeat(6,minmax(0,1fr));
+      gap:12px;
+      margin-bottom:18px;
+    }
+    .detail-kpi{
+      border:1px solid var(--border);
+      background:var(--card);
+      padding:15px;
+      border-radius:14px;
+      position:relative;
+      overflow:hidden;
+    }
+    .detail-kpi::after{
+      content:"";
+      position:absolute;
+      left:0;top:0;bottom:0;
+      width:3px;
+      background:var(--secondary);
+    }
+    .detail-kpi.primary::after{background:var(--primary)}
+    .detail-kpi.alert::after{background:var(--warning)}
+    .detail-kpi span{
+      display:block;
+      font-size:8px;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:700;
+      line-height:1.4;
+    }
+    .detail-kpi strong{
+      display:block;
+      margin-top:7px;
+      font-size:18px;
+      font-weight:600;
+      letter-spacing:-.025em;
+    }
+
+    .detail-grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:16px;
+      margin-bottom:16px;
+    }
+    .detail-section-card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .detail-card-head{
+      padding:16px 18px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .detail-card-head h3{
+      margin:0;
+      font-size:14px;
+      font-weight:600;
+    }
+    .detail-card-head small{
+      color:var(--muted);
+      font-size:9px;
+    }
+    .detail-card-body{padding:18px}
+    .finance-track{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-top:14px;
+    }
+    .finance-step{
+      padding:12px;
+      border:1px solid var(--border);
+      border-radius:11px;
+      background:var(--card-2);
+    }
+    .finance-step b{
+      display:block;
+      font-size:10px;
+      color:var(--muted);
+      margin-bottom:5px;
+    }
+    .finance-step strong{font-size:14px}
+    .detail-progress-line{margin-top:18px}
+    .detail-progress-line .labels{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      font-size:10px;
+      color:var(--muted);
+      margin-bottom:7px;
+    }
+
+    .detail-list{display:grid;gap:9px}
+    .detail-list-item{
+      padding:12px 13px;
+      border:1px solid var(--border);
+      border-radius:11px;
+      background:var(--card-2);
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:center;
+    }
+    .detail-list-item .title{
+      font-size:11px;
+      font-weight:600;
+      line-height:1.35;
+    }
+    .detail-list-item .sub{
+      font-size:9px;
+      color:var(--muted);
+      margin-top:4px;
+      line-height:1.45;
+    }
+    .detail-list-item .value{
+      font-size:12px;
+      font-weight:600;
+      text-align:right;
+      white-space:nowrap;
+    }
+    .detail-empty{
+      padding:24px;
+      text-align:center;
+      color:var(--muted);
+      font-size:11px;
+    }
+    .detail-alert{
+      padding:12px 13px;
+      border-left:3px solid var(--warning);
+      background:color-mix(in srgb,var(--warning) 7%,var(--card));
+      border-radius:9px;
+      font-size:10px;
+      line-height:1.55;
+      color:var(--text);
+    }
+    .detail-alert + .detail-alert{margin-top:8px}
+    .detail-alert.ok{
+      border-left-color:var(--success);
+      background:color-mix(in srgb,var(--success) 7%,var(--card));
+    }
+    .detail-table{overflow:auto}
+    .detail-table table{min-width:760px}
+    .project-open-btn{
+      background:var(--secondary)!important;
+      border-color:var(--secondary)!important;
+      color:#fff!important;
+    }
+    @media(max-width:1250px){
+      .detail-kpis{grid-template-columns:repeat(3,1fr)}
+    }
+
+    @media(max-width:1100px){
+      .kpis{grid-template-columns:repeat(2,1fr)}
+      .two-col{grid-template-columns:1fr}
+      .identity-banner{grid-template-columns:1fr}
+      .identity-banner .blocks{min-height:68px}
+      .detail-grid{grid-template-columns:1fr}
+      .detail-hero{grid-template-columns:1fr}
+      .detail-hero-side{grid-template-columns:1fr 1fr;grid-template-rows:1fr}
+      .finance-track{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:780px){
+      .sidebar{transform:translateX(-100%)}
+      .main{margin-left:0;width:100%}
+      .content{padding:18px}
+      .topbar{padding:0 18px}
+      .kpis{grid-template-columns:1fr}
+      .form-grid{grid-template-columns:1fr}
+      .span2,.span3{grid-column:span 1}
+      .toolbar input,.toolbar select{width:100%}
+      .identity-banner .copy{padding:22px}
+      .identity-banner h2{font-size:22px}
+      .theme-hint{display:none}
+      .detail-kpis{grid-template-columns:1fr 1fr}
+      .detail-selector{align-items:stretch;flex-direction:column}
+      .detail-selector select{max-width:none}
+      .detail-hero-side{grid-template-columns:1fr}
+      .finance-track{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand" aria-label="Goya by Copastur">
+      <img class="logo-light" src="Logo.Goya-PrincipalRGB.png" alt="Goya by Copastur">
+      <img class="logo-dark" src="Logo.Goya-BrancoRGB.png" alt="Goya by Copastur">
+    </div>
+    <div class="menu">
+      <button class="active" data-page="dashboard">▦ Dashboard</button>
+      <button data-page="projetos">◫ Projetos</button>
+      <button data-page="detalheProjeto">◇ Detalhe do Projeto</button>
+      <button data-page="recebimentos">◎ Recebimentos</button>
+      <button data-page="vendas">⌁ Vendas / Serviços</button>
+      <button data-page="fornecedores">↗ Pagamentos Fornecedores</button>
+      <button data-page="relatorios">▤ Relatórios</button>
+    </div>
+    <div class="sidebar-foot">Gestão interna de projetos, antecipações e composição financeira.</div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><h1 id="pageTitle">Dashboard Executivo</h1><p>Controle de antecipações, vendas e saldo por projeto</p></div>
+      <div class="top-actions">
+        <span class="theme-hint">White / Black Label</span>
+        <button class="icon-btn" id="themeToggle" title="Alternar White / Black Label" aria-label="Alternar tema">◐</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <section id="dashboard" class="section active">
+        <div class="identity-banner">
+          <div class="copy">
+            <div class="eyebrow">Gestão financeira de projetos</div>
+            <h2>Visão clara da jornada financeira de cada projeto.</h2>
+            <p>Acompanhe antecipações, recebimentos, vendas, pagamentos a fornecedores e o saldo disponível em uma única visão.</p>
+          </div>
+          <div class="blocks" aria-hidden="true">
+            <div class="marsala"></div>
+            <div class="blue"></div>
+          </div>
+        </div>
+        <div class="grid kpis">
+          <div class="card kpi"><span>ANTECIPADO CONTRATADO</span><strong id="kpiAntecipado">R$ 0,00</strong><small>Total informado nos projetos</small></div>
+          <div class="card kpi"><span>JÁ RECEBIDO</span><strong id="kpiRecebido">R$ 0,00</strong><small>Disponível financeiramente</small></div>
+          <div class="card kpi"><span>VENDAS EMITIDAS</span><strong id="kpiVendas">R$ 0,00</strong><small>Serviços já utilizados</small></div>
+          <div class="card kpi"><span>PAGO A FORNECEDORES</span><strong id="kpiPago">R$ 0,00</strong><small>Saídas efetivamente pagas</small></div>
+          <div class="card kpi"><span>SALDO DISPONÍVEL</span><strong id="kpiSaldo">R$ 0,00</strong><small>Recebido menos pagamentos</small></div>
+        </div>
+
+        <div class="grid two-col" style="margin-top:18px">
+          <div class="card panel">
+            <div class="title-row"><div><h2>Projetos em acompanhamento</h2><p>Visão rápida do consumo da antecipação.</p></div></div>
+            <div id="projectProgress"></div>
+          </div>
+          <div class="card panel">
+            <div class="title-row"><div><h2>Alertas financeiros</h2><p>Itens que merecem atenção.</p></div></div>
+            <div id="alerts"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="projetos" class="section">
+        <div class="title-row"><div><h2>Projetos</h2><p>Um projeto pode reunir vários passageiros, vendas e recebimentos.</p></div><button class="btn btn-primary" onclick="openProjectModal()">+ Novo projeto</button></div>
+        <div class="card toolbar">
+          <input id="filterProject" class="grow" placeholder="Buscar por projeto, cliente, BKO ou consultor">
+          <select id="filterStatus"><option value="">Todos os status</option><option>Em aberto</option><option>Em andamento</option><option>Concluído</option></select>
+          <button class="btn btn-light" onclick="loadAll()">Atualizar</button>
+        </div>
+        <div class="card table-card"><div class="table-wrap"><table><thead><tr><th>Projeto</th><th>BKO</th><th>Cliente</th><th>Viagem</th><th>Consultor</th><th>Antecipado</th><th>Recebido</th><th>Vendas</th><th>Saldo</th><th>Status</th><th>Ações</th></tr></thead><tbody id="projectsBody"></tbody></table></div></div>
+      </section>
+
+
+      <section id="detalheProjeto" class="section">
+        <div class="title-row">
+          <div>
+            <h2>Detalhe do Projeto</h2>
+            <p>Visão 360º da jornada financeira, passageiros, vendas e fornecedores.</p>
+          </div>
+          <button class="btn btn-light" onclick="goToProjects()">← Voltar para projetos</button>
+        </div>
+
+        <div class="detail-selector">
+          <label>Projeto em análise</label>
+          <select id="detailProjectSelect" onchange="setDetailProject(this.value)">
+            <option value="">Selecione um projeto...</option>
+          </select>
+        </div>
+
+        <div id="detailEmptyState" class="card empty">
+          Selecione um projeto para visualizar a composição completa.
+        </div>
+
+        <div id="detailContent" style="display:none">
+          <div class="detail-hero">
+            <div class="detail-hero-main">
+              <div class="detail-code" id="detailCode">Projeto</div>
+              <h2 id="detailName">-</h2>
+              <div class="meta">
+                <span id="detailClient">Cliente: -</span>
+                <span id="detailBko">BKO: -</span>
+                <span id="detailConsultant">Consultor: -</span>
+                <span id="detailTravel">Viagem: -</span>
+                <span id="detailStatus">Status: -</span>
+              </div>
+            </div>
+            <div class="detail-hero-side">
+              <div class="top">
+                <span>Valor antecipado contratado</span>
+                <strong id="detailHeroAdvance">R$ 0,00</strong>
+              </div>
+              <div class="bottom">
+                <span>Saldo financeiro disponível</span>
+                <strong id="detailHeroBalance">R$ 0,00</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-kpis">
+            <div class="detail-kpi primary"><span>Antecipado contratado</span><strong id="detailKpiAdvance">R$ 0,00</strong></div>
+            <div class="detail-kpi"><span>Efetivamente recebido</span><strong id="detailKpiReceived">R$ 0,00</strong></div>
+            <div class="detail-kpi primary"><span>Vendas emitidas</span><strong id="detailKpiSales">R$ 0,00</strong></div>
+            <div class="detail-kpi"><span>Pago a fornecedores</span><strong id="detailKpiPaid">R$ 0,00</strong></div>
+            <div class="detail-kpi alert"><span>Ainda a receber</span><strong id="detailKpiReceivable">R$ 0,00</strong></div>
+            <div class="detail-kpi"><span>Saldo em caixa</span><strong id="detailKpiCash">R$ 0,00</strong></div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="detail-section-card">
+              <div class="detail-card-head">
+                <div><h3>Jornada financeira</h3><small>Da antecipação até o pagamento dos serviços</small></div>
+              </div>
+              <div class="detail-card-body">
+                <div class="finance-track">
+                  <div class="finance-step"><b>1. Contratado</b><strong id="flowAdvance">R$ 0,00</strong></div>
+                  <div class="finance-step"><b>2. Recebido</b><strong id="flowReceived">R$ 0,00</strong></div>
+                  <div class="finance-step"><b>3. Vendas</b><strong id="flowSales">R$ 0,00</strong></div>
+                  <div class="finance-step"><b>4. Fornecedores</b><strong id="flowPaid">R$ 0,00</strong></div>
+                </div>
+
+                <div class="detail-progress-line">
+                  <div class="labels"><span>Recebimento da antecipação</span><strong id="receivedPctLabel">0%</strong></div>
+                  <div class="progress"><i id="receivedPctBar" style="width:0%"></i></div>
+                </div>
+                <div class="detail-progress-line">
+                  <div class="labels"><span>Utilização do valor antecipado em vendas</span><strong id="salesPctLabel">0%</strong></div>
+                  <div class="progress"><i id="salesPctBar" style="width:0%;background:var(--secondary)"></i></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-section-card">
+              <div class="detail-card-head">
+                <div><h3>Alertas do projeto</h3><small>Regras financeiras e pontos de atenção</small></div>
+              </div>
+              <div class="detail-card-body" id="detailAlerts"></div>
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="detail-section-card">
+              <div class="detail-card-head">
+                <div><h3>Recebimentos e parcelas</h3><small>Composição das antecipações</small></div>
+                <button class="btn btn-light" onclick="openReceiptForDetail()">+ Recebimento</button>
+              </div>
+              <div class="detail-card-body">
+                <div class="detail-list" id="detailReceipts"></div>
+              </div>
+            </div>
+
+            <div class="detail-section-card">
+              <div class="detail-card-head">
+                <div><h3>Passageiros e composição</h3><small>Viajantes vinculados ao projeto</small></div>
+              </div>
+              <div class="detail-card-body">
+                <div class="detail-list" id="detailPassengers"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section-card" style="margin-bottom:16px">
+            <div class="detail-card-head">
+              <div><h3>Vendas e serviços do projeto</h3><small>RLOCs, fornecedores e valores utilizados</small></div>
+              <button class="btn btn-primary" onclick="openSaleForDetail()">+ Nova venda</button>
+            </div>
+            <div class="detail-table">
+              <table>
+                <thead>
+                  <tr><th>Pax / Hóspede</th><th>Serviço</th><th>Fornecedor</th><th>RLOC</th><th>Data</th><th>Venda</th><th>Custo</th><th>Status</th></tr>
+                </thead>
+                <tbody id="detailSalesBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="detail-section-card">
+            <div class="detail-card-head">
+              <div><h3>Pagamentos a fornecedores</h3><small>Saídas financeiras vinculadas ao projeto</small></div>
+              <button class="btn btn-secondary" onclick="openSupplierForDetail()">+ Registrar pagamento</button>
+            </div>
+            <div class="detail-table">
+              <table>
+                <thead>
+                  <tr><th>Fornecedor</th><th>RLOC</th><th>Valor</th><th>Data</th><th>Comprovante</th><th>Status</th></tr>
+                </thead>
+                <tbody id="detailSupplierBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="recebimentos" class="section">
+        <div class="title-row"><div><h2>Recebimentos</h2><p>Registre PIX, faturado e cartões, inclusive parcelados.</p></div><button class="btn btn-primary" onclick="openReceiptModal()">+ Novo recebimento</button></div>
+        <div class="note">Para cartão parcelado, cada parcela deve possuir vencimento e status próprio. A autorização faz o vínculo com a área de Recebimentos.</div>
+        <div class="card table-card" style="margin-top:14px"><div class="table-wrap"><table><thead><tr><th>Projeto</th><th>Forma</th><th>Parcela</th><th>Autorização</th><th>Previsto</th><th>Recebido</th><th>Data</th><th>Status</th><th>Ações</th></tr></thead><tbody id="receiptsBody"></tbody></table></div></div>
+      </section>
+
+      <section id="vendas" class="section">
+        <div class="title-row"><div><h2>Vendas / Serviços</h2><p>Composição do projeto por passageiro e fornecedor.</p></div><button class="btn btn-primary" onclick="openSaleModal()">+ Nova venda</button></div>
+        <div class="card table-card"><div class="table-wrap"><table><thead><tr><th>Projeto</th><th>Pax / Hóspede</th><th>Fornecedor</th><th>Serviço</th><th>RLOC</th><th>Data viagem</th><th>Valor venda</th><th>Custo fornecedor</th><th>Status</th><th>Ações</th></tr></thead><tbody id="salesBody"></tbody></table></div></div>
+      </section>
+
+      <section id="fornecedores" class="section">
+        <div class="title-row"><div><h2>Pagamentos a fornecedores</h2><p>Pagamento liberado somente com valor recebido disponível.</p></div><button class="btn btn-primary" onclick="openSupplierModal()">+ Registrar pagamento</button></div>
+        <div class="card table-card"><div class="table-wrap"><table><thead><tr><th>Projeto</th><th>Fornecedor</th><th>RLOC</th><th>Valor</th><th>Data</th><th>Comprovante</th><th>Status</th><th>Ações</th></tr></thead><tbody id="supplierBody"></tbody></table></div></div>
+      </section>
+
+      <section id="relatorios" class="section">
+        <div class="title-row"><div><h2>Relatório executivo</h2><p>Consolidado para diretoria e gestão financeira.</p></div></div>
+        <div class="card table-card"><div class="table-wrap"><table><thead><tr><th>Projeto</th><th>Cliente</th><th>Antecipado</th><th>Recebido</th><th>Vendas</th><th>Pago fornecedores</th><th>A receber</th><th>Saldo caixa</th><th>Status</th></tr></thead><tbody id="reportBody"></tbody></table></div></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="modal" id="projectModal">
+  <div class="modal-box">
+    <div class="modal-head"><strong>Novo projeto</strong><button class="icon-btn" onclick="closeModal('projectModal')">×</button></div>
+    <div class="modal-body">
+      <form id="projectForm">
+        <input type="hidden" name="id">
+        <div class="form-grid">
+          <div class="field"><label>Nome do projeto *</label><input name="nomeProjeto" required placeholder="Ex.: Viagem Convenção Novembro 2026"></div>
+          <div class="field"><label>BKO *</label><input name="bko" required inputmode="numeric" maxlength="6" pattern="\d{1,6}" placeholder="Até 6 números"></div>
+          <div class="field"><label>Cliente / Empresa *</label><input name="cliente" required></div>
+          <div class="field"><label>Data início viagem</label><input type="date" name="dataInicio"></div>
+          <div class="field"><label>Data fim viagem</label><input type="date" name="dataFim"></div>
+          <div class="field"><label>Valor antecipado contratado *</label><input type="number" step="0.01" min="0" name="valorAntecipado" required></div>
+          <div class="field"><label>Status *</label><select name="status"><option>Em aberto</option><option>Em andamento</option><option>Concluído</option></select></div>
+          <div class="field"><label>Consultor *</label><input name="consultor" required></div>
+          <div class="field"><label>E-mail consultor *</label><input type="email" name="emailConsultor" required></div>
+          <div class="field span3"><label>Observações</label><textarea name="observacoes" rows="3" placeholder="Condições comerciais, escopo, observações do cliente..."></textarea></div>
+        </div>
+        <div class="form-actions"><button type="button" class="btn btn-light" onclick="closeModal('projectModal')">Cancelar</button><button class="btn btn-primary">Salvar projeto</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="receiptModal">
+  <div class="modal-box">
+    <div class="modal-head"><strong>Novo recebimento</strong><button class="icon-btn" onclick="closeModal('receiptModal')">×</button></div>
+    <div class="modal-body">
+      <form id="receiptForm">
+        <input type="hidden" name="id">
+        <div class="form-grid">
+          <div class="field"><label>Projeto *</label><select name="projetoId" class="projectSelect" required></select></div>
+          <div class="field"><label>Forma de recebimento *</label><select name="forma" required onchange="toggleCardFields(this.form)"><option>PIX</option><option>Faturado</option><option>Cartão de crédito à vista</option><option>Cartão de crédito parcelado</option></select></div>
+          <div class="field"><label>Valor previsto *</label><input type="number" step="0.01" min="0" name="valorPrevisto" required></div>
+          <div class="field card-field"><label>Número da autorização</label><input name="autorizacao"></div>
+          <div class="field card-field"><label>Parcela</label><input name="parcela" placeholder="Ex.: 1/10"></div>
+          <div class="field"><label>Data prevista</label><input type="date" name="dataPrevista"></div>
+          <div class="field"><label>Valor recebido</label><input type="number" step="0.01" min="0" name="valorRecebido"></div>
+          <div class="field"><label>Data do recebimento</label><input type="date" name="dataRecebimento"></div>
+          <div class="field"><label>Status</label><select name="status"><option>Pendente</option><option>Recebido</option><option>Parcial</option><option>Cancelado</option></select></div>
+          <div class="field span3"><label>Observações</label><textarea name="observacoes" rows="2"></textarea></div>
+        </div>
+        <div class="form-actions"><button type="button" class="btn btn-light" onclick="closeModal('receiptModal')">Cancelar</button><button class="btn btn-primary">Salvar recebimento</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="saleModal">
+  <div class="modal-box">
+    <div class="modal-head"><strong>Nova venda / serviço</strong><button class="icon-btn" onclick="closeModal('saleModal')">×</button></div>
+    <div class="modal-body">
+      <form id="saleForm">
+        <input type="hidden" name="id">
+        <div class="form-grid">
+          <div class="field"><label>Projeto *</label><select name="projetoId" class="projectSelect" required></select></div>
+          <div class="field"><label>Pax / Hóspede *</label><input name="pax" required></div>
+          <div class="field"><label>Fornecedor *</label><input name="fornecedor" required></div>
+          <div class="field"><label>Tipo de serviço *</label><select name="servico"><option>Aéreo</option><option>Hotel</option><option>Locação de carro</option><option>Transfer</option><option>Seguro</option><option>Rodoviário</option><option>Outros</option></select></div>
+          <div class="field"><label>RLOC *</label><input name="rloc" required></div>
+          <div class="field"><label>Data da viagem / serviço</label><input type="date" name="dataServico"></div>
+          <div class="field"><label>Valor da venda *</label><input type="number" step="0.01" min="0" name="valorVenda" required></div>
+          <div class="field"><label>Custo fornecedor *</label><input type="number" step="0.01" min="0" name="custoFornecedor" required></div>
+          <div class="field"><label>Status</label><select name="status"><option>Reservado</option><option>Emitido</option><option>Cancelado</option></select></div>
+          <div class="field span3"><label>Observações</label><textarea name="observacoes" rows="2"></textarea></div>
+        </div>
+        <div class="form-actions"><button type="button" class="btn btn-light" onclick="closeModal('saleModal')">Cancelar</button><button class="btn btn-primary">Salvar venda</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="supplierModal">
+  <div class="modal-box">
+    <div class="modal-head"><strong>Pagamento a fornecedor</strong><button class="icon-btn" onclick="closeModal('supplierModal')">×</button></div>
+    <div class="modal-body">
+      <form id="supplierForm">
+        <input type="hidden" name="id">
+        <div class="form-grid">
+          <div class="field"><label>Projeto *</label><select name="projetoId" class="projectSelect" required></select></div>
+          <div class="field"><label>Fornecedor *</label><input name="fornecedor" required></div>
+          <div class="field"><label>RLOC</label><input name="rloc"></div>
+          <div class="field"><label>Valor do pagamento *</label><input type="number" step="0.01" min="0" name="valor" required></div>
+          <div class="field"><label>Data do pagamento *</label><input type="date" name="dataPagamento" required></div>
+          <div class="field"><label>Comprovante / referência</label><input name="comprovante"></div>
+          <div class="field"><label>Status</label><select name="status"><option>Pago</option><option>Agendado</option><option>Cancelado</option></select></div>
+          <div class="field span2"><label>Observações</label><textarea name="observacoes" rows="2"></textarea></div>
+        </div>
+        <div id="supplierWarning" class="note" style="margin-top:14px">O sistema validará o saldo já recebido antes de permitir um pagamento marcado como “Pago”.</div>
+        <div class="form-actions"><button type="button" class="btn btn-light" onclick="closeModal('supplierModal')">Cancelar</button><button class="btn btn-primary">Salvar pagamento</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // COLE A URL DO SEU WEB APP DO APPS SCRIPT AQUI:
+  const API_URL = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
+
+  let state = { projects:[], receipts:[], sales:[], supplierPayments:[], summary:[] };
+  let selectedDetailProjectId = "";
+
+  const money = v => Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  const esc = v => String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+  const id = x => document.getElementById(x);
+
+  document.querySelectorAll(".menu button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      document.querySelectorAll(".menu button").forEach(x=>x.classList.remove("active"));
+      document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
+      btn.classList.add("active"); id(btn.dataset.page).classList.add("active");
+      id("pageTitle").textContent = btn.textContent.trim().replace(/^[^\wÀ-ÿ]+/,"");
+      if(btn.dataset.page==="detalheProjeto" && selectedDetailProjectId) renderProjectDetail(selectedDetailProjectId);
+    });
+  });
+
+  id("themeToggle").onclick=()=>{
+    document.body.classList.toggle("dark");
+    localStorage.setItem("goyaTheme",document.body.classList.contains("dark")?"dark":"light");
+  };
+  if(localStorage.getItem("goyaTheme")==="dark") document.body.classList.add("dark");
+
+  async function api(action,payload={},method="GET"){
+    if(API_URL.includes("COLE_AQUI")) return mockApi(action,payload);
+    if(method==="GET"){
+      const url = new URL(API_URL); url.searchParams.set("action",action);
+      Object.entries(payload).forEach(([k,v])=>url.searchParams.set(k,v));
+      const r=await fetch(url); const j=await r.json(); if(!j.ok) throw new Error(j.error||"Erro"); return j.data;
+    }
+    const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,...payload})});
+    const j=await r.json(); if(!j.ok) throw new Error(j.error||"Erro"); return j.data;
+  }
+
+  async function loadAll(){
+    try{
+      const data = await api("bootstrap");
+      state = data;
+      renderAll();
+    }catch(e){ alert("Erro ao carregar: "+e.message); }
+  }
+
+  function summaryByProject(projectId){
+    return state.summary.find(x=>String(x.projetoId)===String(projectId))||{antecipado:0,recebido:0,vendas:0,pago:0,saldoCaixa:0,aReceber:0};
+  }
+
+  function renderAll(){
+    renderProjectSelects(); renderProjects(); renderReceipts(); renderSales(); renderSupplier(); renderReport(); renderDashboard();
+    renderDetailProjectSelect();
+    if(selectedDetailProjectId) renderProjectDetail(selectedDetailProjectId);
+  }
+
+  function renderProjectSelects(){
+    document.querySelectorAll(".projectSelect").forEach(sel=>{
+      const cur=sel.value;
+      sel.innerHTML='<option value="">Selecione...</option>'+state.projects.map(p=>`<option value="${esc(p.id)}">${esc(p.nomeProjeto)} — ${esc(p.cliente)}</option>`).join("");
+      if(cur) sel.value=cur;
+    });
+  }
+
+  function badge(s){
+    const c = s==="Concluído"||s==="Recebido"||s==="Pago"?"done":(s==="Em andamento"||s==="Parcial"||s==="Emitido"?"progress":"open");
+    return `<span class="badge ${c}">${esc(s)}</span>`;
+  }
+
+  function renderProjects(){
+    const q=(id("filterProject")?.value||"").toLowerCase(); const st=id("filterStatus")?.value||"";
+    const rows=state.projects.filter(p=>!q||[p.nomeProjeto,p.cliente,p.bko,p.consultor].join(" ").toLowerCase().includes(q)).filter(p=>!st||p.status===st);
+    id("projectsBody").innerHTML=rows.length?rows.map(p=>{const s=summaryByProject(p.id);return `<tr>
+      <td><strong>${esc(p.nomeProjeto)}</strong></td><td>${esc(p.bko)}</td><td>${esc(p.cliente)}</td>
+      <td>${esc(p.dataInicio||"-")} → ${esc(p.dataFim||"-")}</td><td>${esc(p.consultor)}</td>
+      <td>${money(p.valorAntecipado)}</td><td>${money(s.recebido)}</td><td>${money(s.vendas)}</td><td><strong>${money(s.saldoCaixa)}</strong></td><td>${badge(p.status)}</td>
+      <td><div class="actions"><button class="project-open-btn" onclick="openProjectDetail('${p.id}')">Detalhes</button><button onclick="editProject('${p.id}')">Editar</button><button onclick="deleteItem('project','${p.id}')">Excluir</button></div></td></tr>`}).join(""):`<tr><td colspan="11" class="empty">Nenhum projeto encontrado.</td></tr>`;
+  }
+
+  function projectName(pid){ const p=state.projects.find(x=>String(x.id)===String(pid)); return p?p.nomeProjeto:"-"; }
+
+  function renderReceipts(){
+    id("receiptsBody").innerHTML=state.receipts.length?state.receipts.map(r=>`<tr>
+      <td>${esc(projectName(r.projetoId))}</td><td>${esc(r.forma)}</td><td>${esc(r.parcela||"-")}</td><td>${esc(r.autorizacao||"-")}</td>
+      <td>${money(r.valorPrevisto)}</td><td>${money(r.valorRecebido)}</td><td>${esc(r.dataRecebimento||r.dataPrevista||"-")}</td><td>${badge(r.status)}</td>
+      <td><div class="actions"><button onclick="editReceipt('${r.id}')">Editar</button><button onclick="deleteItem('receipt','${r.id}')">Excluir</button></div></td></tr>`).join(""):`<tr><td colspan="9" class="empty">Nenhum recebimento.</td></tr>`;
+  }
+
+  function renderSales(){
+    id("salesBody").innerHTML=state.sales.length?state.sales.map(s=>`<tr>
+      <td>${esc(projectName(s.projetoId))}</td><td>${esc(s.pax)}</td><td>${esc(s.fornecedor)}</td><td>${esc(s.servico)}</td><td>${esc(s.rloc)}</td>
+      <td>${esc(s.dataServico||"-")}</td><td>${money(s.valorVenda)}</td><td>${money(s.custoFornecedor)}</td><td>${badge(s.status)}</td>
+      <td><div class="actions"><button onclick="editSale('${s.id}')">Editar</button><button onclick="deleteItem('sale','${s.id}')">Excluir</button></div></td></tr>`).join(""):`<tr><td colspan="10" class="empty">Nenhuma venda.</td></tr>`;
+  }
+
+  function renderSupplier(){
+    id("supplierBody").innerHTML=state.supplierPayments.length?state.supplierPayments.map(s=>`<tr>
+      <td>${esc(projectName(s.projetoId))}</td><td>${esc(s.fornecedor)}</td><td>${esc(s.rloc||"-")}</td><td>${money(s.valor)}</td><td>${esc(s.dataPagamento||"-")}</td><td>${esc(s.comprovante||"-")}</td><td>${badge(s.status)}</td>
+      <td><div class="actions"><button onclick="editSupplier('${s.id}')">Editar</button><button onclick="deleteItem('supplier','${s.id}')">Excluir</button></div></td></tr>`).join(""):`<tr><td colspan="8" class="empty">Nenhum pagamento.</td></tr>`;
+  }
+
+  function renderReport(){
+    id("reportBody").innerHTML=state.projects.map(p=>{const s=summaryByProject(p.id);return `<tr>
+      <td><strong>${esc(p.nomeProjeto)}</strong></td><td>${esc(p.cliente)}</td><td>${money(p.valorAntecipado)}</td><td>${money(s.recebido)}</td><td>${money(s.vendas)}</td><td>${money(s.pago)}</td><td>${money(s.aReceber)}</td><td><strong>${money(s.saldoCaixa)}</strong></td><td>${badge(p.status)}</td></tr>`}).join("")||`<tr><td colspan="9" class="empty">Sem dados.</td></tr>`;
+  }
+
+  function renderDashboard(){
+    const total=(key)=>state.summary.reduce((a,b)=>a+Number(b[key]||0),0);
+    id("kpiAntecipado").textContent=money(state.projects.reduce((a,p)=>a+Number(p.valorAntecipado||0),0));
+    id("kpiRecebido").textContent=money(total("recebido")); id("kpiVendas").textContent=money(total("vendas")); id("kpiPago").textContent=money(total("pago")); id("kpiSaldo").textContent=money(total("saldoCaixa"));
+
+    id("projectProgress").innerHTML=state.projects.slice(0,8).map(p=>{const s=summaryByProject(p.id); const base=Number(p.valorAntecipado||0); const pct=base?Math.min(100,(Number(s.vendas||0)/base)*100):0;
+      return `<div style="margin:14px 0"><div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:7px"><div><strong>${esc(p.nomeProjeto)}</strong><div style="font-size:11px;color:var(--muted)">${esc(p.cliente)}</div></div><strong>${pct.toFixed(0)}%</strong></div><div class="progress"><i style="width:${pct}%"></i></div></div>`}).join("")||'<div class="empty">Cadastre o primeiro projeto.</div>';
+
+    const alerts=[];
+    state.projects.forEach(p=>{const s=summaryByProject(p.id);
+      if(Number(s.vendas)>Number(p.valorAntecipado)) alerts.push(`Projeto <strong>${esc(p.nomeProjeto)}</strong> ultrapassou o valor antecipado em ${money(Number(s.vendas)-Number(p.valorAntecipado))}.`);
+      if(Number(s.pago)>Number(s.recebido)) alerts.push(`Projeto <strong>${esc(p.nomeProjeto)}</strong> possui pagamento a fornecedor maior que o valor efetivamente recebido.`);
+      if(Number(s.aReceber)>0) alerts.push(`Projeto <strong>${esc(p.nomeProjeto)}</strong> ainda possui ${money(s.aReceber)} a receber.`);
+    });
+    id("alerts").innerHTML=alerts.length?alerts.slice(0,8).map(a=>`<div class="mini" style="margin-bottom:9px">${a}</div>`).join(""):'<div class="mini">Nenhum alerta financeiro no momento.</div>';
+  }
+
+
+  function showPage(pageId){
+    document.querySelectorAll(".menu button").forEach(x=>x.classList.toggle("active",x.dataset.page===pageId));
+    document.querySelectorAll(".section").forEach(x=>x.classList.toggle("active",x.id===pageId));
+    const btn=document.querySelector(`.menu button[data-page="${pageId}"]`);
+    if(btn) id("pageTitle").textContent=btn.textContent.trim().replace(/^[^\wÀ-ÿ]+/,"");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function renderDetailProjectSelect(){
+    const sel=id("detailProjectSelect");
+    if(!sel) return;
+    const cur=selectedDetailProjectId || sel.value;
+    sel.innerHTML='<option value="">Selecione um projeto...</option>'+
+      state.projects.map(p=>`<option value="${esc(p.id)}">${esc(p.nomeProjeto)} — ${esc(p.cliente)}</option>`).join("");
+    if(cur && state.projects.some(p=>String(p.id)===String(cur))){
+      sel.value=cur;
+      selectedDetailProjectId=cur;
+    }
+  }
+
+  function openProjectDetail(projectId){
+    selectedDetailProjectId=String(projectId);
+    renderDetailProjectSelect();
+    renderProjectDetail(selectedDetailProjectId);
+    showPage("detalheProjeto");
+  }
+
+  function setDetailProject(projectId){
+    selectedDetailProjectId=String(projectId||"");
+    renderProjectDetail(selectedDetailProjectId);
+  }
+
+  function goToProjects(){ showPage("projetos"); }
+
+  function renderProjectDetail(projectId){
+    const empty=id("detailEmptyState"), content=id("detailContent");
+    if(!projectId){
+      if(empty) empty.style.display="block";
+      if(content) content.style.display="none";
+      return;
+    }
+
+    const p=state.projects.find(x=>String(x.id)===String(projectId));
+    if(!p){
+      if(empty) empty.style.display="block";
+      if(content) content.style.display="none";
+      return;
+    }
+
+    empty.style.display="none";
+    content.style.display="block";
+
+    const s=summaryByProject(projectId);
+    const projectReceipts=state.receipts.filter(x=>String(x.projetoId)===String(projectId));
+    const projectSales=state.sales.filter(x=>String(x.projetoId)===String(projectId));
+    const projectPayments=state.supplierPayments.filter(x=>String(x.projetoId)===String(projectId));
+
+    const advance=Number(p.valorAntecipado||0);
+    const received=Number(s.recebido||0);
+    const sales=Number(s.vendas||0);
+    const paid=Number(s.pago||0);
+    const receivable=Number(s.aReceber||0);
+    const cash=Number(s.saldoCaixa||0);
+
+    id("detailCode").textContent=`Projeto ${p.id}`;
+    id("detailName").textContent=p.nomeProjeto||"-";
+    id("detailClient").textContent=`Cliente: ${p.cliente||"-"}`;
+    id("detailBko").textContent=`BKO: ${p.bko||"-"}`;
+    id("detailConsultant").textContent=`Consultor: ${p.consultor||"-"}`;
+    id("detailTravel").textContent=`Viagem: ${p.dataInicio||"-"} → ${p.dataFim||"-"}`;
+    id("detailStatus").textContent=`Status: ${p.status||"-"}`;
+
+    id("detailHeroAdvance").textContent=money(advance);
+    id("detailHeroBalance").textContent=money(cash);
+
+    id("detailKpiAdvance").textContent=money(advance);
+    id("detailKpiReceived").textContent=money(received);
+    id("detailKpiSales").textContent=money(sales);
+    id("detailKpiPaid").textContent=money(paid);
+    id("detailKpiReceivable").textContent=money(receivable);
+    id("detailKpiCash").textContent=money(cash);
+
+    id("flowAdvance").textContent=money(advance);
+    id("flowReceived").textContent=money(received);
+    id("flowSales").textContent=money(sales);
+    id("flowPaid").textContent=money(paid);
+
+    const receivedPct=advance?Math.max(0,Math.min(100,received/advance*100)):0;
+    const salesPct=advance?Math.max(0,Math.min(100,sales/advance*100)):0;
+    id("receivedPctLabel").textContent=receivedPct.toFixed(0)+"%";
+    id("receivedPctBar").style.width=receivedPct+"%";
+    id("salesPctLabel").textContent=salesPct.toFixed(0)+"%";
+    id("salesPctBar").style.width=salesPct+"%";
+
+    const alerts=[];
+    if(receivable>0) alerts.push(`<div class="detail-alert">Ainda existem <strong>${money(receivable)}</strong> previstos para receber neste projeto.</div>`);
+    if(sales>advance) alerts.push(`<div class="detail-alert">As vendas ultrapassaram o valor antecipado em <strong>${money(sales-advance)}</strong>. Será necessário cobrar diferença do cliente.</div>`);
+    if(paid>received) alerts.push(`<div class="detail-alert">Os pagamentos a fornecedores ultrapassam o valor efetivamente recebido em <strong>${money(paid-received)}</strong>.</div>`);
+    if(cash<0) alerts.push(`<div class="detail-alert">O projeto está com saldo financeiro negativo de <strong>${money(Math.abs(cash))}</strong>.</div>`);
+    if(!alerts.length) alerts.push(`<div class="detail-alert ok">Projeto sem alertas financeiros críticos no momento.</div>`);
+    id("detailAlerts").innerHTML=alerts.join("");
+
+    id("detailReceipts").innerHTML=projectReceipts.length?projectReceipts
+      .sort((a,b)=>String(a.dataPrevista||a.dataRecebimento||"").localeCompare(String(b.dataPrevista||b.dataRecebimento||"")))
+      .map(r=>`<div class="detail-list-item">
+        <div>
+          <div class="title">${esc(r.forma)} ${r.parcela?`• ${esc(r.parcela)}`:""}</div>
+          <div class="sub">${r.autorizacao?`Autorização ${esc(r.autorizacao)} • `:""}Previsto: ${esc(r.dataPrevista||"-")} • Recebido: ${esc(r.dataRecebimento||"-")} • ${esc(r.status||"-")}</div>
+        </div>
+        <div class="value">${money(r.valorRecebido||0)}<div class="sub">de ${money(r.valorPrevisto||0)}</div></div>
+      </div>`).join(""):'<div class="detail-empty">Nenhum recebimento cadastrado.</div>';
+
+    const passengerMap={};
+    projectSales.filter(x=>x.status!=="Cancelado").forEach(v=>{
+      const pax=v.pax||"Não informado";
+      if(!passengerMap[pax]) passengerMap[pax]={count:0,total:0};
+      passengerMap[pax].count++;
+      passengerMap[pax].total+=Number(v.valorVenda||0);
+    });
+    const passengerEntries=Object.entries(passengerMap);
+    id("detailPassengers").innerHTML=passengerEntries.length?passengerEntries.map(([pax,d])=>`<div class="detail-list-item">
+      <div><div class="title">${esc(pax)}</div><div class="sub">${d.count} serviço(s) vinculado(s)</div></div>
+      <div class="value">${money(d.total)}</div>
+    </div>`).join(""):'<div class="detail-empty">Nenhum passageiro vinculado.</div>';
+
+    id("detailSalesBody").innerHTML=projectSales.length?projectSales.map(v=>`<tr>
+      <td>${esc(v.pax)}</td><td>${esc(v.servico)}</td><td>${esc(v.fornecedor)}</td><td>${esc(v.rloc)}</td>
+      <td>${esc(v.dataServico||"-")}</td><td>${money(v.valorVenda)}</td><td>${money(v.custoFornecedor)}</td><td>${badge(v.status)}</td>
+    </tr>`).join(""):`<tr><td colspan="8" class="detail-empty">Nenhuma venda cadastrada.</td></tr>`;
+
+    id("detailSupplierBody").innerHTML=projectPayments.length?projectPayments.map(v=>`<tr>
+      <td>${esc(v.fornecedor)}</td><td>${esc(v.rloc||"-")}</td><td>${money(v.valor)}</td><td>${esc(v.dataPagamento||"-")}</td><td>${esc(v.comprovante||"-")}</td><td>${badge(v.status)}</td>
+    </tr>`).join(""):`<tr><td colspan="6" class="detail-empty">Nenhum pagamento cadastrado.</td></tr>`;
+  }
+
+  function openReceiptForDetail(){
+    if(!selectedDetailProjectId) return alert("Selecione um projeto.");
+    id("receiptForm").reset();
+    id("receiptForm").elements["projetoId"].value=selectedDetailProjectId;
+    toggleCardFields(id("receiptForm"));
+    openModal("receiptModal");
+  }
+
+  function openSaleForDetail(){
+    if(!selectedDetailProjectId) return alert("Selecione um projeto.");
+    id("saleForm").reset();
+    id("saleForm").elements["projetoId"].value=selectedDetailProjectId;
+    openModal("saleModal");
+  }
+
+  function openSupplierForDetail(){
+    if(!selectedDetailProjectId) return alert("Selecione um projeto.");
+    id("supplierForm").reset();
+    id("supplierForm").elements["projetoId"].value=selectedDetailProjectId;
+    openModal("supplierModal");
+  }
+
+  ["filterProject","filterStatus"].forEach(x=>document.getElementById(x)?.addEventListener("input",renderProjects));
+
+  function openModal(m){ id(m).classList.add("show"); }
+  function closeModal(m){ id(m).classList.remove("show"); }
+  function openProjectModal(){ id("projectForm").reset(); openModal("projectModal"); }
+  function openReceiptModal(){ id("receiptForm").reset(); toggleCardFields(id("receiptForm")); openModal("receiptModal"); }
+  function openSaleModal(){ id("saleForm").reset(); openModal("saleModal"); }
+  function openSupplierModal(){ id("supplierForm").reset(); openModal("supplierModal"); }
+
+  function toggleCardFields(form){
+    const isCard=form.forma.value.includes("Cartão");
+    form.querySelectorAll(".card-field").forEach(x=>x.style.display=isCard?"block":"none");
+  }
+
+  function formData(form){ return Object.fromEntries(new FormData(form).entries()); }
+  async function saveForm(action,form,modal){
+    try{ await api(action,{item:formData(form)},"POST"); closeModal(modal); await loadAll(); }
+    catch(e){ alert(e.message); }
+  }
+  id("projectForm").onsubmit=e=>{e.preventDefault();saveForm("saveProject",e.target,"projectModal")};
+  id("receiptForm").onsubmit=e=>{e.preventDefault();saveForm("saveReceipt",e.target,"receiptModal")};
+  id("saleForm").onsubmit=e=>{e.preventDefault();saveForm("saveSale",e.target,"saleModal")};
+  id("supplierForm").onsubmit=e=>{e.preventDefault();saveForm("saveSupplierPayment",e.target,"supplierModal")};
+
+  function fillForm(form,obj){Object.entries(obj).forEach(([k,v])=>{if(form.elements[k])form.elements[k].value=v??""})}
+  function editProject(x){const o=state.projects.find(i=>String(i.id)===String(x));fillForm(id("projectForm"),o);openModal("projectModal")}
+  function editReceipt(x){const o=state.receipts.find(i=>String(i.id)===String(x));fillForm(id("receiptForm"),o);toggleCardFields(id("receiptForm"));openModal("receiptModal")}
+  function editSale(x){const o=state.sales.find(i=>String(i.id)===String(x));fillForm(id("saleForm"),o);openModal("saleModal")}
+  function editSupplier(x){const o=state.supplierPayments.find(i=>String(i.id)===String(x));fillForm(id("supplierForm"),o);openModal("supplierModal")}
+  async function deleteItem(type,itemId){ if(!confirm("Deseja realmente excluir este registro?"))return; try{await api("deleteItem",{type,id:itemId},"POST");await loadAll()}catch(e){alert(e.message)} }
+
+  // Demonstração automática antes da URL do Apps Script ser configurada.
+  function mockApi(action,payload){
+    const now="2026-08-22";
+    if(!window.__mock){
+      window.__mock={
+        projects:[{id:"P1",nomeProjeto:"Convenção Goya Novembro 2026",bko:"102345",cliente:"Cliente Exemplo S.A.",dataInicio:"2026-11-10",dataFim:"2026-11-16",valorAntecipado:120000,status:"Em andamento",consultor:"Mariana Costa",emailConsultor:"mariana@empresa.com"}],
+        receipts:[
+          {id:"R1",projetoId:"P1",forma:"PIX",valorPrevisto:30000,valorRecebido:30000,dataPrevista:"2026-08-15",dataRecebimento:"2026-08-15",status:"Recebido"},
+          {id:"R2",projetoId:"P1",forma:"Cartão de crédito parcelado",autorizacao:"654321",parcela:"1/3",valorPrevisto:30000,valorRecebido:30000,dataPrevista:"2026-08-20",dataRecebimento:"2026-08-20",status:"Recebido"},
+          {id:"R3",projetoId:"P1",forma:"Cartão de crédito parcelado",autorizacao:"654321",parcela:"2/3",valorPrevisto:30000,valorRecebido:0,dataPrevista:"2026-09-20",status:"Pendente"},
+          {id:"R4",projetoId:"P1",forma:"Cartão de crédito parcelado",autorizacao:"654321",parcela:"3/3",valorPrevisto:30000,valorRecebido:0,dataPrevista:"2026-10-20",status:"Pendente"}
+        ],
+        sales:[
+          {id:"V1",projetoId:"P1",pax:"Ana Souza",fornecedor:"Companhia Aérea Exemplo",servico:"Aéreo",rloc:"ABC123",dataServico:"2026-11-10",valorVenda:24500,custoFornecedor:22000,status:"Emitido"},
+          {id:"V2",projetoId:"P1",pax:"Carlos Lima",fornecedor:"Hotel Exemplo",servico:"Hotel",rloc:"HTL9087",dataServico:"2026-11-10",valorVenda:18500,custoFornecedor:16000,status:"Emitido"}
+        ],
+        supplierPayments:[{id:"F1",projetoId:"P1",fornecedor:"Companhia Aérea Exemplo",rloc:"ABC123",valor:22000,dataPagamento:"2026-08-21",comprovante:"PG-001",status:"Pago"}]
+      }
+    }
+    const db=window.__mock;
+    const calc=()=>db.projects.map(p=>{
+      const rec=db.receipts.filter(x=>x.projetoId===p.id&&x.status!=="Cancelado").reduce((a,x)=>a+Number(x.valorRecebido||0),0);
+      const vendas=db.sales.filter(x=>x.projetoId===p.id&&x.status!=="Cancelado").reduce((a,x)=>a+Number(x.valorVenda||0),0);
+      const pago=db.supplierPayments.filter(x=>x.projetoId===p.id&&x.status==="Pago").reduce((a,x)=>a+Number(x.valor||0),0);
+      const previsto=db.receipts.filter(x=>x.projetoId===p.id&&x.status!=="Cancelado").reduce((a,x)=>a+Number(x.valorPrevisto||0),0);
+      return {projetoId:p.id,antecipado:Number(p.valorAntecipado||0),recebido:rec,vendas,pago,saldoCaixa:rec-pago,aReceber:Math.max(0,previsto-rec)};
+    });
+    if(action==="bootstrap") return Promise.resolve({...db,summary:calc()});
+    const maps={saveProject:"projects",saveReceipt:"receipts",saveSale:"sales",saveSupplierPayment:"supplierPayments"};
+    if(maps[action]){
+      const arr=db[maps[action]], item=payload.item; if(!item.id)item.id=Date.now().toString(); const ix=arr.findIndex(x=>x.id===item.id); if(ix>=0)arr[ix]=item;else arr.push(item);return Promise.resolve(item);
+    }
+    if(action==="deleteItem"){ const map={project:"projects",receipt:"receipts",sale:"sales",supplier:"supplierPayments"}; const a=db[map[payload.type]], ix=a.findIndex(x=>x.id===payload.id); if(ix>=0)a.splice(ix,1); return Promise.resolve(true); }
+  }
+
+  loadAll();
+</script>
+</body>
+</html>
