@@ -1540,7 +1540,7 @@
   }
 
   async function sendReportToCEO(type){
-    try{const projectId=type==="detalhado"?id("reportProjectSelect").value:"";if(type==="detalhado"&&!projectId)throw new Error("Selecione o projeto.");if(!confirm("Enviar este relatório por e-mail ao CEO configurado no Apps Script?"))return;await api("sendReportEmail",{type,projectId},"POST");alert("Relatório enviado ao CEO com sucesso.");}catch(e){alert(e.message)}
+    try{const projectId=type==="detalhado"?id("reportProjectSelect").value:"";if(type==="detalhado"&&!projectId)throw new Error("Selecione o projeto.");if(!confirm("Enviar este relatório por e-mail ao CEO configurado no Apps Script?"))return;await api("sendReportEmail",{reportType:type,projectId},"POST");alert("Relatório enviado ao CEO com sucesso.");}catch(e){alert(e.message)}
   }
 
   async function sendPaymentToFinance(paymentId){
