@@ -1016,7 +1016,7 @@
       <section id="recebimentos" class="section">
         <div class="title-row"><div><h2>Recebimentos</h2><p>Registre PIX, faturado e cartões, inclusive parcelados.</p></div><button class="btn btn-primary" onclick="openReceiptModal()">+ Novo recebimento</button></div>
         <div class="note">Para cartão parcelado, cada parcela deve possuir vencimento e status próprio. A autorização faz o vínculo com a área de Recebimentos.</div>
-        <div class="card table-card" style="margin-top:14px"><div class="table-wrap"><table><thead><tr><th>Recebimento ID</th><th>Projeto ID</th><th>Projeto</th><th>Grupo</th><th>Forma</th><th>Parcela</th><th>Autorização</th><th>Previsto</th><th>Recebido</th><th>Data</th><th>Status</th><th>Ações</th></tr></thead><tbody id="receiptsBody"></tbody></table></div></div>
+        <div class="card table-card" style="margin-top:14px"><div class="table-wrap"><table><thead><tr><th>Recebimento ID</th><th>Projeto ID</th><th>Projeto</th><th>Forma</th><th>Parcela</th><th>AP</th><th>Autorização</th><th>Previsto</th><th>Recebido</th><th>Data</th><th>Status</th><th>Ações</th></tr></thead><tbody id="receiptsBody"></tbody></table></div></div>
       </section>
 
       <section id="vendas" class="section">
@@ -1101,23 +1101,33 @@
       <form id="receiptForm">
         <input type="hidden" name="id">
         <div class="form-grid">
-          <div class="field record-id-field" style="display:none"><label>Recebimento ID</label><input name="idDisplay" readonly></div>
-          <div class="field installment-existing-field" style="display:none"><label>Grupo de recebimento</label><input name="grupoId" readonly></div>
           <div class="field"><label>Projeto *</label><select name="projetoId" class="projectSelect" required></select></div>
-          <div class="field"><label>Forma de recebimento *</label><select name="forma" required onchange="toggleCardFields(this.form)"><option>PIX</option><option>Faturado</option><option>Cartão de crédito à vista</option><option>Cartão de crédito parcelado</option></select></div>
-          <div class="field"><label id="receiptValueLabel">Valor previsto *</label><input type="text" inputmode="decimal" class="money-input" name="valorPrevisto" required placeholder="0,00"></div>
-          <div class="field card-field"><label>Número da autorização *</label><input name="autorizacao"></div>
-          <div class="field installment-create-field"><label>Quantidade de parcelas *</label><select name="qtdParcelas"><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option><option value="9">9x</option><option value="10">10x</option></select></div>
-          <div class="field installment-create-field"><label>Data da cobrança na maquineta *</label><input type="date" name="dataCobranca"></div>
-          <div class="field installment-existing-field"><label>Parcela</label><input name="parcela" readonly></div>
-          <div class="field single-receipt-field"><label>Data prevista</label><input type="date" name="dataPrevista"></div>
-          <div class="field single-receipt-field"><label>Valor recebido</label><input type="text" inputmode="decimal" class="money-input" name="valorRecebido" placeholder="0,00"></div>
-          <div class="field single-receipt-field"><label>Data do recebimento</label><input type="date" name="dataRecebimento"></div>
-          <div class="field single-receipt-field"><label>Status</label><select name="status"><option>Pendente</option><option>Recebido</option><option>Parcial</option><option>Cancelado</option></select></div>
+          <div class="field"><label>Forma de recebimento *</label>
+            <select name="forma" required onchange="toggleReceiptFields(this.form)">
+              <option value="PIX">PIX</option>
+              <option value="Faturado">Faturado</option>
+              <option value="Cartão de crédito à vista">Cartão de crédito à vista</option>
+              <option value="Cartão de crédito parcelado">Cartão de crédito parcelado</option>
+            </select>
+          </div>
+          <div class="field"><label>Valor total *</label><input type="text" inputmode="decimal" class="money-input" name="valorPrevisto" required placeholder="0,00"></div>
+          <div class="field card-field"><label>Número da autorização *</label><input name="autorizacao" inputmode="numeric" pattern="\d*"></div>
+          <div class="field card-field"><label>Data da cobrança na maquineta *</label><input type="date" name="dataCobranca"></div>
+          <div class="field installment-field" style="display:none"><label>Quantidade de parcelas *</label>
+            <select name="qtdParcelas">
+              <option value="">Selecione...</option>
+              <option value="2">2x</option><option value="3">3x</option><option value="4">4x</option>
+              <option value="5">5x</option><option value="6">6x</option><option value="7">7x</option>
+              <option value="8">8x</option><option value="9">9x</option><option value="10">10x</option>
+            </select>
+          </div>
+          <div class="field single-date-field"><label>Data prevista de recebimento *</label><input type="date" name="dataPrevista"></div>
           <div class="field span3"><label>Observações</label><textarea name="observacoes" rows="2"></textarea></div>
         </div>
-        <div id="installmentInfo" class="note" style="display:none;margin-top:14px">Ao salvar, o sistema criará automaticamente cada parcela. A primeira vence 30 dias após a cobrança na maquineta e as demais a cada 30 dias.</div>
-        <div class="form-actions"><button type="button" class="btn btn-light" onclick="closeModal('receiptModal')">Cancelar</button><button class="btn btn-primary">Salvar recebimento</button></div>
+        <div class="note" style="margin-top:14px">
+          PIX, Faturado e Cartão à vista geram 1 parcela. Cartão parcelado gera automaticamente a quantidade selecionada, com vencimentos a cada 30 dias.
+        </div>
+        <div class="form-actions"><button type="button" class="btn btn-light" onclick="closeModal('receiptModal')">Cancelar</button><button class="btn btn-primary">Gerar recebimento</button></div>
       </form>
     </div>
   </div>
@@ -1321,9 +1331,19 @@
 
   function renderReceipts(){
     id("receiptsBody").innerHTML=state.receipts.length?state.receipts.map(r=>`<tr>
-      <td><span class="id-badge">${esc(r.id)}</span></td><td><span class="id-badge primary">${esc(r.projetoId)}</span></td><td>${esc(projectName(r.projetoId))}</td><td>${r.grupoId?`<span class="id-badge">${esc(r.grupoId)}</span>`:"-"}</td><td>${esc(r.forma)}</td><td>${esc(r.parcela||"-")}</td><td>${esc(r.autorizacao||"-")}</td>
-      <td>${money(r.valorPrevisto)}</td><td>${money(r.valorRecebido)}</td><td>${dateBR(r.dataRecebimento||r.dataPrevista)}</td><td>${badge(r.status)}</td>
-      <td><div class="actions"><button onclick="editReceipt('${r.id}')">Editar</button><button onclick="deleteItem('receipt','${r.id}')">Excluir</button></div></td></tr>`).join(""):`<tr><td colspan="13" class="empty">Nenhum recebimento.</td></tr>`;
+      <td><span class="id-badge">${esc(r.id)}</span></td>
+      <td><span class="id-badge primary">${esc(r.projetoId)}</span></td>
+      <td>${esc(projectName(r.projetoId))}</td>
+      <td>${esc(r.forma)}</td>
+      <td>${esc(r.parcela||"1 de 1")}</td>
+      <td>${esc(r.ap||"-")}</td>
+      <td>${esc(r.autorizacao||"-")}</td>
+      <td>${money(r.valorPrevisto)}</td>
+      <td>${money(r.valorRecebido)}</td>
+      <td>${dateBR(r.dataRecebimento||r.dataPrevista)}</td>
+      <td>${badge(r.status)}</td>
+      <td><div class="actions"><button onclick="editReceipt('${r.id}')">Atualizar</button><button onclick="deleteItem('receipt','${r.id}')">Excluir</button></div></td>
+    </tr>`).join(""):`<tr><td colspan="12" class="empty">Nenhum recebimento.</td></tr>`;
   }
 
   function renderSales(){
@@ -1542,7 +1562,7 @@
       .map(r=>`<div class="detail-list-item">
         <div>
           <div class="title">${esc(r.forma)} ${r.parcela?`• ${esc(r.parcela)}`:""}</div>
-          <div class="sub">${r.autorizacao?`Autorização ${esc(r.autorizacao)} • `:""}Previsto: ${dateBR(r.dataPrevista)} • Recebido: ${dateBR(r.dataRecebimento)} • ${esc(r.status||"-")}</div>
+          <div class="sub">${r.autorizacao?`Autorização ${esc(r.autorizacao)} • `:""}${r.ap?`AP ${esc(r.ap)} • `:""}Previsto: ${dateBR(r.dataPrevista)} • Recebido: ${dateBR(r.dataRecebimento)} • ${esc(r.status||"-")}</div>
         </div>
         <div class="value">${money(r.valorRecebido||0)}<div class="sub">de ${money(r.valorPrevisto||0)}</div></div>
       </div>`).join(""):'<div class="detail-empty">Nenhum recebimento cadastrado.</div>';
@@ -1575,7 +1595,7 @@
     id("receiptForm").reset();
     id("receiptForm").elements["id"].value="";
     id("receiptForm").elements["projetoId"].value=selectedDetailProjectId;
-    toggleCardFields(id("receiptForm"));
+    toggleReceiptFields(id("receiptForm"));
     openModal("receiptModal");
   }
 
@@ -1634,23 +1654,26 @@
   function openModal(m){ id(m).classList.add("show"); }
   function closeModal(m){ id(m).classList.remove("show"); }
   function openProjectModal(){ const f=id("projectForm"); f.reset(); f.elements["id"].value=""; id("projectModal").querySelector(".modal-head strong").textContent="Novo projeto"; openModal("projectModal"); }
-  function openReceiptModal(){ const f=id("receiptForm"); f.reset(); f.elements["id"].value=""; id("receiptModal").querySelector(".modal-head strong").textContent="Novo recebimento"; toggleCardFields(f); openModal("receiptModal"); }
+  function openReceiptModal(){
+    id("receiptForm").reset();
+    toggleReceiptFields(id("receiptForm"));
+    bindMoneyInputs(id("receiptForm"));
+    openModal("receiptModal");
+  }
   function openSaleModal(){ const f=id("saleForm"); f.reset(); f.elements["id"].value=""; openModal("saleModal"); }
   function openSupplierModal(){ const f=id("supplierForm"); f.reset(); f.elements["id"].value=""; openModal("supplierModal"); }
 
-  function toggleCardFields(form){
-    const isCard=form.forma.value.includes("Cartão");
-    const isInstallment=form.forma.value==="Cartão de crédito parcelado";
-    const editing=!!form.elements["id"].value;
+  function toggleReceiptFields(form){
+    const forma=form.forma.value;
+    const isCard=forma.includes("Cartão");
+    const parcelado=forma==="Cartão de crédito parcelado";
     form.querySelectorAll(".card-field").forEach(x=>x.style.display=isCard?"block":"none");
-    form.querySelectorAll(".installment-create-field").forEach(x=>x.style.display=(isInstallment&&!editing)?"block":"none");
-    form.querySelectorAll(".installment-existing-field").forEach(x=>x.style.display=(isInstallment&&editing)?"block":"none");
-    form.querySelectorAll(".single-receipt-field").forEach(x=>x.style.display=(!isInstallment||editing)?"block":"none");
-    const info=id("installmentInfo"); if(info) info.style.display=(isInstallment&&!editing)?"block":"none";
-    const lbl=id("receiptValueLabel"); if(lbl) lbl.textContent=(isInstallment&&!editing)?"Valor total do parcelamento *":"Valor previsto *";
-    if(form.elements["autorizacao"]) form.elements["autorizacao"].required=isCard;
-    if(form.elements["qtdParcelas"]) form.elements["qtdParcelas"].required=isInstallment&&!editing;
-    if(form.elements["dataCobranca"]) form.elements["dataCobranca"].required=isInstallment&&!editing;
+    form.querySelectorAll(".installment-field").forEach(x=>x.style.display=parcelado?"block":"none");
+    form.querySelectorAll(".single-date-field").forEach(x=>x.style.display=parcelado?"none":"block");
+    form.autorizacao.required=isCard;
+    form.dataCobranca.required=isCard;
+    form.qtdParcelas.required=parcelado;
+    form.dataPrevista.required=!parcelado;
   }
 
   function formData(form){
@@ -1666,6 +1689,19 @@
   }
   id("projectForm").onsubmit=e=>{e.preventDefault();saveForm("saveProject",e.target,"projectModal")};
   id("receiptForm").onsubmit=e=>{e.preventDefault();saveForm("saveReceipt",e.target,"receiptModal")};
+  id("receiptEditForm").onsubmit=async e=>{
+    e.preventDefault();
+    const f=e.target;
+    try{
+      await api("updateReceiptLine",{item:{
+        id:f.id.value, ap:f.ap.value, valorRecebido:f.valorRecebido.value,
+        dataRecebimento:f.dataRecebimento.value, status:f.status.value,
+        observacoes:f.observacoes.value
+      }},"POST");
+      closeModal("receiptEditModal");
+      await loadAll();
+    }catch(err){alert(err.message);}
+  };
   id("saleForm").onsubmit=e=>{e.preventDefault();saveForm("saveSale",e.target,"saleModal")};
   id("supplierForm").onsubmit=e=>{e.preventDefault();saveForm("saveSupplierPayment",e.target,"supplierModal")};
 
@@ -1676,7 +1712,23 @@
     bindMoneyInputs(form);
   }
   function editProject(x){const o=state.projects.find(i=>String(i.id)===String(x));fillForm(id("projectForm"),o);id("projectModal").querySelector(".modal-head strong").textContent="Editar projeto";openModal("projectModal")}
-  function editReceipt(x){const o=state.receipts.find(i=>String(i.id)===String(x));fillForm(id("receiptForm"),o);id("receiptModal").querySelector(".modal-head strong").textContent="Editar parcela / recebimento";toggleCardFields(id("receiptForm"));openModal("receiptModal")}
+  function editReceipt(x){
+    const o=state.receipts.find(i=>String(i.id)===String(x));
+    if(!o)return;
+    const f=id("receiptEditForm");
+    f.reset();
+    f.id.value=o.id||"";
+    f.idDisplay.value=o.id||"";
+    f.parcela.value=o.parcela||"1 de 1";
+    f.ap.value=o.ap||"";
+    f.valorPrevistoDisplay.value=money(o.valorPrevisto||0);
+    f.valorRecebido.value=formatMoneyFieldValue(o.valorRecebido||0);
+    f.dataRecebimento.value=o.dataRecebimento||"";
+    f.status.value=o.status||"Pendente";
+    f.observacoes.value=o.observacoes||"";
+    bindMoneyInputs(f);
+    openModal("receiptEditModal");
+  }
   function editSale(x){const o=state.sales.find(i=>String(i.id)===String(x));fillForm(id("saleForm"),o);openModal("saleModal")}
   function editSupplier(x){
     const o=state.supplierPayments.find(i=>String(i.id)===String(x));
@@ -1748,5 +1800,27 @@
   bindMoneyInputs();
   loadAll();
 </script>
+
+<div class="modal" id="receiptEditModal">
+  <div class="modal-box">
+    <div class="modal-head"><strong>Atualizar parcela</strong><button class="icon-btn" onclick="closeModal('receiptEditModal')">×</button></div>
+    <div class="modal-body">
+      <form id="receiptEditForm">
+        <input type="hidden" name="id">
+        <div class="form-grid">
+          <div class="field"><label>Recebimento ID</label><input name="idDisplay" readonly></div>
+          <div class="field"><label>Parcela</label><input name="parcela" readonly></div>
+          <div class="field"><label>AP</label><input name="ap" inputmode="numeric" pattern="\d*" placeholder="Somente números"></div>
+          <div class="field"><label>Valor previsto</label><input name="valorPrevistoDisplay" readonly></div>
+          <div class="field"><label>Valor recebido</label><input type="text" inputmode="decimal" class="money-input" name="valorRecebido" placeholder="0,00"></div>
+          <div class="field"><label>Data do recebimento</label><input type="date" name="dataRecebimento"></div>
+          <div class="field"><label>Status</label><select name="status"><option>Pendente</option><option>Recebido</option><option>Parcial</option><option>Cancelado</option></select></div>
+          <div class="field span2"><label>Observações</label><textarea name="observacoes" rows="2"></textarea></div>
+        </div>
+        <div class="form-actions"><button type="button" class="btn btn-light" onclick="closeModal('receiptEditModal')">Cancelar</button><button class="btn btn-primary">Salvar atualização</button></div>
+      </form>
+    </div>
+  </div>
+</div>
 </body>
 </html>
