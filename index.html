@@ -1194,6 +1194,28 @@
   </div>
 </div>
 
+<div class="modal" id="receiptEditModal">
+  <div class="modal-box">
+    <div class="modal-head"><strong>Atualizar parcela</strong><button class="icon-btn" onclick="closeModal('receiptEditModal')">×</button></div>
+    <div class="modal-body">
+      <form id="receiptEditForm">
+        <input type="hidden" name="id">
+        <div class="form-grid">
+          <div class="field"><label>Recebimento ID</label><input name="idDisplay" readonly></div>
+          <div class="field"><label>Parcela</label><input name="parcela" readonly></div>
+          <div class="field"><label>AP</label><input name="ap" inputmode="numeric" pattern="\d*" placeholder="Somente números"></div>
+          <div class="field"><label>Valor previsto</label><input name="valorPrevistoDisplay" readonly></div>
+          <div class="field"><label>Valor recebido</label><input type="text" inputmode="decimal" class="money-input" name="valorRecebido" placeholder="0,00"></div>
+          <div class="field"><label>Data do recebimento</label><input type="date" name="dataRecebimento"></div>
+          <div class="field"><label>Status</label><select name="status"><option>Pendente</option><option>Recebido</option><option>Parcial</option><option>Cancelado</option></select></div>
+          <div class="field span2"><label>Observações</label><textarea name="observacoes" rows="2"></textarea></div>
+        </div>
+        <div class="form-actions"><button type="button" class="btn btn-light" onclick="closeModal('receiptEditModal')">Cancelar</button><button class="btn btn-primary">Salvar atualização</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
   // COLE A URL DO SEU WEB APP DO APPS SCRIPT AQUI:
@@ -1279,8 +1301,9 @@
     if(API_URL.includes("COLE_AQUI")) return mockApi(action,payload);
     if(method==="GET"){
       const url = new URL(API_URL); url.searchParams.set("action",action);
+      url.searchParams.set("_t",Date.now());
       Object.entries(payload).forEach(([k,v])=>url.searchParams.set(k,v));
-      const r=await fetch(url); const j=await r.json(); if(!j.ok) throw new Error(j.error||"Erro"); return j.data;
+      const r=await fetch(url,{cache:"no-store"}); const j=await r.json(); if(!j.ok) throw new Error(j.error||"Erro"); return j.data;
     }
     const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,...payload})});
     const j=await r.json(); if(!j.ok) throw new Error(j.error||"Erro"); return j.data;
@@ -1289,9 +1312,17 @@
   async function loadAll(){
     try{
       const data = await api("bootstrap");
+      if(!data || !Array.isArray(data.projects) || !Array.isArray(data.receipts)){
+        throw new Error("Resposta inválida do Apps Script.");
+      }
       state = data;
       renderAll();
-    }catch(e){ alert("Erro ao carregar: "+e.message); }
+      return true;
+    }catch(e){
+      console.error("Falha ao carregar dados Goya:",e);
+      alert("Não foi possível atualizar os dados agora. Os registros já carregados foram mantidos. Detalhe: "+e.message);
+      return false;
+    }
   }
 
   function summaryByProject(projectId){
@@ -1689,9 +1720,10 @@
   }
   id("projectForm").onsubmit=e=>{e.preventDefault();saveForm("saveProject",e.target,"projectModal")};
   id("receiptForm").onsubmit=e=>{e.preventDefault();saveForm("saveReceipt",e.target,"receiptModal")};
-  id("receiptEditForm").onsubmit=async e=>{
+  id("receiptEditForm").addEventListener("submit", async e=>{
     e.preventDefault();
-    const f=e.target;
+    e.stopPropagation();
+    const f=e.currentTarget;
     try{
       await api("updateReceiptLine",{item:{
         id:f.elements["id"].value,
@@ -1704,7 +1736,8 @@
       closeModal("receiptEditModal");
       await loadAll();
     }catch(err){alert(err.message);}
-  };
+    return false;
+  });
   id("saleForm").onsubmit=e=>{e.preventDefault();saveForm("saveSale",e.target,"saleModal")};
   id("supplierForm").onsubmit=e=>{e.preventDefault();saveForm("saveSupplierPayment",e.target,"supplierModal")};
 
@@ -1804,26 +1837,5 @@
   loadAll();
 </script>
 
-<div class="modal" id="receiptEditModal">
-  <div class="modal-box">
-    <div class="modal-head"><strong>Atualizar parcela</strong><button class="icon-btn" onclick="closeModal('receiptEditModal')">×</button></div>
-    <div class="modal-body">
-      <form id="receiptEditForm">
-        <input type="hidden" name="id">
-        <div class="form-grid">
-          <div class="field"><label>Recebimento ID</label><input name="idDisplay" readonly></div>
-          <div class="field"><label>Parcela</label><input name="parcela" readonly></div>
-          <div class="field"><label>AP</label><input name="ap" inputmode="numeric" pattern="\d*" placeholder="Somente números"></div>
-          <div class="field"><label>Valor previsto</label><input name="valorPrevistoDisplay" readonly></div>
-          <div class="field"><label>Valor recebido</label><input type="text" inputmode="decimal" class="money-input" name="valorRecebido" placeholder="0,00"></div>
-          <div class="field"><label>Data do recebimento</label><input type="date" name="dataRecebimento"></div>
-          <div class="field"><label>Status</label><select name="status"><option>Pendente</option><option>Recebido</option><option>Parcial</option><option>Cancelado</option></select></div>
-          <div class="field span2"><label>Observações</label><textarea name="observacoes" rows="2"></textarea></div>
-        </div>
-        <div class="form-actions"><button type="button" class="btn btn-light" onclick="closeModal('receiptEditModal')">Cancelar</button><button class="btn btn-primary">Salvar atualização</button></div>
-      </form>
-    </div>
-  </div>
-</div>
 </body>
 </html>
