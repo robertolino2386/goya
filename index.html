@@ -733,7 +733,7 @@
     .report-summary-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:16px 0}.report-summary-strip .mini{background:var(--card)}
     #reportPrintMount{position:fixed;left:-100000px;top:0;width:1100px;background:#fff;color:#231f20;z-index:-1}
     .pdf-report{font-family:"Montserrat",Arial,sans-serif;background:#fff;color:#231f20;padding:38px;line-height:1.45}
-    .pdf-report *{box-sizing:border-box}.pdf-report .pdf-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #8A391B;padding-bottom:20px;margin-bottom:22px}.pdf-report .pdf-logo{width:105px;height:auto}.pdf-report h1,.pdf-report h2,.pdf-report h3{font-family:"Caviar Dreams","Montserrat",sans-serif;font-weight:400}.pdf-report h1{font-size:25px;margin:0}.pdf-report h2{font-size:18px;margin:26px 0 10px;color:#8A391B}.pdf-report h3{font-size:14px}.pdf-report .pdf-muted{color:#6f6a66;font-size:11px}.pdf-report .pdf-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.pdf-report .pdf-kpi{border:1px solid #ded8d2;border-top:3px solid #29475C;padding:12px}.pdf-report .pdf-kpi:nth-child(odd){border-top-color:#8A391B}.pdf-report .pdf-kpi span{display:block;font-size:9px;color:#6f6a66;text-transform:uppercase}.pdf-report .pdf-kpi strong{display:block;font-family:"Novecento Sans Wide","Montserrat",sans-serif;font-size:16px;margin-top:5px}.pdf-report table{width:100%;border-collapse:collapse;margin:8px 0 18px;font-size:9px}.pdf-report th{background:#29475C;color:#fff;text-align:left;padding:7px}.pdf-report td{border-bottom:1px solid #e6e0dc;padding:7px;vertical-align:top}.pdf-report .pdf-project{border:1px solid #ded8d2;padding:14px;margin:10px 0}.pdf-report .pdf-footer{border-top:1px solid #ded8d2;margin-top:28px;padding-top:10px;color:#777;font-size:8px;text-align:center}
+    .pdf-report *{box-sizing:border-box}.pdf-report .pdf-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #8A391B;padding-bottom:20px;margin-bottom:22px}.pdf-report .pdf-logo{width:105px;height:auto}.pdf-report h1,.pdf-report h2,.pdf-report h3{font-family:"Caviar Dreams","Montserrat",sans-serif;font-weight:400}.pdf-report h1{font-size:25px;margin:0}.pdf-report h2{font-size:18px;margin:26px 0 10px;color:#8A391B}.pdf-report h3{font-size:14px}.pdf-report .pdf-muted{color:#6f6a66;font-size:11px}.pdf-report .pdf-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.pdf-report .pdf-kpi{border:1px solid #ded8d2;border-top:3px solid #29475C;padding:12px}.pdf-report .pdf-kpi:nth-child(odd){border-top-color:#8A391B}.pdf-report .pdf-kpi span{display:block;font-size:9px;color:#6f6a66;text-transform:uppercase}.pdf-report .pdf-kpi strong{display:block;font-family:"Novecento Sans Wide","Montserrat",sans-serif;font-size:16px;margin-top:5px}.pdf-report table{width:100%;border-collapse:collapse;margin:8px 0 18px;font-size:9px}.pdf-report th{background:#29475C;color:#fff;text-align:left;padding:7px}.pdf-report td{border-bottom:1px solid #e6e0dc;padding:7px;vertical-align:top}.pdf-report .pdf-project{border:1px solid #ded8d2;padding:14px;margin:10px 0}.pdf-report .pdf-footer{border-top:1px solid #ded8d2;margin-top:28px;padding-top:10px;color:#777;font-size:8px;text-align:center}.pdf-report .pdf-id{display:inline-block;padding:3px 6px;border:1px solid #c8d2d9;background:#eef3f6;color:#29475C;border-radius:10px;font-size:8px;font-weight:700;white-space:nowrap}
     @media(max-width:900px){.report-options{grid-template-columns:1fr}.report-summary-strip{grid-template-columns:repeat(2,1fr)}}
 
 
@@ -1453,7 +1453,7 @@
     const p=state.projects.find(x=>String(x.id)===String(projectId)); if(!p) throw new Error("Selecione um projeto.");
     const s=summaryByProject(p.id), recs=state.receipts.filter(x=>String(x.projetoId)===String(p.id)), sales=state.sales.filter(x=>String(x.projetoId)===String(p.id)), pays=state.supplierPayments.filter(x=>String(x.projetoId)===String(p.id));
     const receiptRows=recs.map(r=>`<tr><td>${esc(r.forma)}</td><td>${esc(r.parcela||"-")}</td><td>${esc(r.autorizacao||"-")}</td><td>${fmtDateBR(r.dataPrevista)}</td><td>${money(r.valorPrevisto)}</td><td>${money(r.valorRecebido)}</td><td>${esc(r.status)}</td></tr>`).join("")||'<tr><td colspan="7">Sem recebimentos.</td></tr>';
-    const saleRows=sales.map(v=>`<tr><td><span class="id-badge">${esc(v.id)}</span></td><td>${esc(v.pax)}</td><td>${esc(v.servico)}</td><td>${esc(v.fornecedor)}</td><td>${esc(v.rloc)}</td><td>${fmtDateBR(v.dataServico)}</td><td>${money(v.valorVenda)}</td><td>${money(v.custoFornecedor)}</td><td>${esc(v.status)}</td></tr>`).join("")||'<tr><td colspan="8">Sem vendas.</td></tr>';
+    const saleRows=sales.map(v=>`<tr><td><span class="pdf-id">${esc(v.id)}</span></td><td>${esc(v.pax)}</td><td>${esc(v.servico)}</td><td>${esc(v.fornecedor)}</td><td>${esc(v.rloc)}</td><td>${fmtDateBR(v.dataServico)}</td><td>${money(v.valorVenda)}</td><td>${money(v.custoFornecedor)}</td><td>${esc(v.status)}</td></tr>`).join("")||'<tr><td colspan="9">Sem vendas.</td></tr>';
     const payRows=pays.map(v=>`<tr><td>${esc(v.fornecedor)}</td><td>${esc(v.rloc||"-")}</td><td>${fmtDateBR(v.dataPagamento)}</td><td>${money(v.valor)}</td><td>${esc(v.comprovante||"-")}</td><td>${esc(v.status)}</td></tr>`).join("")||'<tr><td colspan="6">Sem pagamentos.</td></tr>';
     const diff=Number(p.valorAntecipado||0)-Number(s.vendas||0); const situation=diff>0?`Saldo comercial ainda não utilizado: ${money(diff)}`:diff<0?`Diferença a cobrar do cliente: ${money(Math.abs(diff))}`:"Vendas equivalentes ao valor antecipado.";
     return `<div class="pdf-report">${reportHeader("Relatório Detalhado do Projeto",p.nomeProjeto)}
@@ -1473,7 +1473,36 @@
       if(type==="consolidado"){htmlReport=buildConsolidatedReportHtml();filename=`Goya_Relatorio_Consolidado_${new Date().toISOString().slice(0,10)}.pdf`;}
       else{const pid=id("reportProjectSelect").value;if(!pid)throw new Error("Selecione o projeto para gerar o relatório detalhado.");const p=state.projects.find(x=>String(x.id)===String(pid));htmlReport=buildDetailedReportHtml(pid);filename=`Goya_Projeto_${String(p.nomeProjeto).replace(/[^a-zA-Z0-9_-]+/g,"_")}.pdf`;}
       const mount=id("reportPrintMount");mount.innerHTML=htmlReport;const el=mount.firstElementChild;
-      await html2pdf().set({margin:7,filename,image:{type:"jpeg",quality:.96},html2canvas:{scale:1.5,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"landscape"},pagebreak:{mode:["css","legacy"]}}).from(el).save();
+      await html2pdf().set({
+        margin:7,
+        filename,
+        image:{type:"jpeg",quality:.96},
+        html2canvas:{
+          scale:1.5,
+          useCORS:true,
+          backgroundColor:"#ffffff",
+          onclone:(doc)=>{
+            const cloned=doc.querySelector(".pdf-report");
+            if(!cloned) return;
+            // O PDF usa apenas cores tradicionais suportadas pelo html2canvas.
+            cloned.style.backgroundColor="#ffffff";
+            cloned.style.color="#231f20";
+            cloned.querySelectorAll("*").forEach(node=>{
+              const cs=doc.defaultView.getComputedStyle(node);
+              ["color","backgroundColor","borderTopColor","borderRightColor","borderBottomColor","borderLeftColor"].forEach(prop=>{
+                const value=cs[prop];
+                if(value && (value.includes("color(") || value.includes("color-mix("))){
+                  if(prop==="color") node.style.color="#231f20";
+                  else if(prop==="backgroundColor") node.style.backgroundColor="transparent";
+                  else node.style[prop]="#ded8d2";
+                }
+              });
+            });
+          }
+        },
+        jsPDF:{unit:"mm",format:"a4",orientation:"landscape"},
+        pagebreak:{mode:["css","legacy"]}
+      }).from(el).save();
       mount.innerHTML="";
     }catch(e){alert(e.message)}
   }
