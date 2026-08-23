@@ -736,6 +736,42 @@
     .pdf-report *{box-sizing:border-box}.pdf-report .pdf-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #8A391B;padding-bottom:20px;margin-bottom:22px}.pdf-report .pdf-logo{width:105px;height:auto}.pdf-report h1,.pdf-report h2,.pdf-report h3{font-family:"Caviar Dreams","Montserrat",sans-serif;font-weight:400}.pdf-report h1{font-size:25px;margin:0}.pdf-report h2{font-size:18px;margin:26px 0 10px;color:#8A391B}.pdf-report h3{font-size:14px}.pdf-report .pdf-muted{color:#6f6a66;font-size:11px}.pdf-report .pdf-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.pdf-report .pdf-kpi{border:1px solid #ded8d2;border-top:3px solid #29475C;padding:12px}.pdf-report .pdf-kpi:nth-child(odd){border-top-color:#8A391B}.pdf-report .pdf-kpi span{display:block;font-size:9px;color:#6f6a66;text-transform:uppercase}.pdf-report .pdf-kpi strong{display:block;font-family:"Novecento Sans Wide","Montserrat",sans-serif;font-size:16px;margin-top:5px}.pdf-report table{width:100%;border-collapse:collapse;margin:8px 0 18px;font-size:9px}.pdf-report th{background:#29475C;color:#fff;text-align:left;padding:7px}.pdf-report td{border-bottom:1px solid #e6e0dc;padding:7px;vertical-align:top}.pdf-report .pdf-project{border:1px solid #ded8d2;padding:14px;margin:10px 0}.pdf-report .pdf-footer{border-top:1px solid #ded8d2;margin-top:28px;padding-top:10px;color:#777;font-size:8px;text-align:center}
     @media(max-width:900px){.report-options{grid-template-columns:1fr}.report-summary-strip{grid-template-columns:repeat(2,1fr)}}
 
+
+    .id-badge{
+      display:inline-flex;
+      align-items:center;
+      padding:5px 8px;
+      border-radius:999px;
+      background:color-mix(in srgb,var(--secondary) 9%,var(--card));
+      border:1px solid color-mix(in srgb,var(--secondary) 22%,var(--border));
+      color:var(--secondary);
+      font-family:"Montserrat",Arial,sans-serif;
+      font-size:9px;
+      font-weight:700;
+      letter-spacing:.04em;
+      white-space:nowrap;
+    }
+    .id-badge.primary{
+      background:color-mix(in srgb,var(--primary) 8%,var(--card));
+      border-color:color-mix(in srgb,var(--primary) 20%,var(--border));
+      color:var(--primary);
+    }
+    .integrity-box{
+      margin-bottom:16px;
+      padding:13px 15px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:var(--card);
+      font-size:11px;
+      color:var(--muted);
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .integrity-box strong{color:var(--text)}
+
     @media(max-width:1100px){
       .kpis{grid-template-columns:repeat(2,1fr)}
       .two-col{grid-template-columns:1fr}
@@ -828,13 +864,17 @@
       </section>
 
       <section id="projetos" class="section">
+        <div id="integrityBox" class="integrity-box">
+          <div><strong>Integridade dos vínculos</strong><br><span id="integrityText">Validando IDs e relacionamentos...</span></div>
+          <button class="btn btn-light" onclick="refreshIntegrity()">Validar vínculos</button>
+        </div>
         <div class="title-row"><div><h2>Projetos</h2><p>Um projeto pode reunir vários passageiros, vendas e recebimentos.</p></div><button class="btn btn-primary" onclick="openProjectModal()">+ Novo projeto</button></div>
         <div class="card toolbar">
           <input id="filterProject" class="grow" placeholder="Buscar por projeto, cliente, BKO ou consultor">
           <select id="filterStatus"><option value="">Todos os status</option><option>Em aberto</option><option>Em andamento</option><option>Concluído</option></select>
           <button class="btn btn-light" onclick="loadAll()">Atualizar</button>
         </div>
-        <div class="card table-card"><div class="table-wrap"><table><thead><tr><th>Projeto</th><th>BKO</th><th>Cliente</th><th>Viagem</th><th>Consultor</th><th>Antecipado</th><th>Recebido</th><th>Vendas</th><th>Saldo</th><th>Status</th><th>Ações</th></tr></thead><tbody id="projectsBody"></tbody></table></div></div>
+        <div class="card table-card"><div class="table-wrap"><table><thead><tr><th>Projeto ID</th><th>Projeto</th><th>BKO</th><th>Cliente</th><th>Viagem</th><th>Consultor</th><th>Antecipado</th><th>Recebido</th><th>Vendas</th><th>Saldo</th><th>Status</th><th>Ações</th></tr></thead><tbody id="projectsBody"></tbody></table></div></div>
       </section>
 
 
@@ -953,7 +993,7 @@
             <div class="detail-table">
               <table>
                 <thead>
-                  <tr><th>Pax / Hóspede</th><th>Serviço</th><th>Fornecedor</th><th>RLOC</th><th>Data</th><th>Venda</th><th>Custo</th><th>Status</th></tr>
+                  <tr><th>Venda ID</th><th>Pax / Hóspede</th><th>Serviço</th><th>Fornecedor</th><th>RLOC</th><th>Data</th><th>Venda</th><th>Custo</th><th>Status</th></tr>
                 </thead>
                 <tbody id="detailSalesBody"></tbody>
               </table>
@@ -968,7 +1008,7 @@
             <div class="detail-table">
               <table>
                 <thead>
-                  <tr><th>Fornecedor</th><th>RLOC</th><th>Moeda</th><th>Valor moeda</th><th>Pago em R$</th><th>Data</th><th>Comprovante</th><th>Status</th></tr>
+                  <tr><th>Pagamento ID</th><th>Venda ID</th><th>Fornecedor</th><th>RLOC</th><th>Moeda</th><th>Valor moeda</th><th>Pago em R$</th><th>Data</th><th>Comprovante</th><th>Status</th></tr>
                 </thead>
                 <tbody id="detailSupplierBody"></tbody>
               </table>
@@ -980,19 +1020,19 @@
       <section id="recebimentos" class="section">
         <div class="title-row"><div><h2>Recebimentos</h2><p>Registre PIX, faturado e cartões, inclusive parcelados.</p></div><button class="btn btn-primary" onclick="openReceiptModal()">+ Novo recebimento</button></div>
         <div class="note">Para cartão parcelado, cada parcela deve possuir vencimento e status próprio. A autorização faz o vínculo com a área de Recebimentos.</div>
-        <div class="card table-card" style="margin-top:14px"><div class="table-wrap"><table><thead><tr><th>Projeto</th><th>Forma</th><th>Parcela</th><th>Autorização</th><th>Previsto</th><th>Recebido</th><th>Data</th><th>Status</th><th>Ações</th></tr></thead><tbody id="receiptsBody"></tbody></table></div></div>
+        <div class="card table-card" style="margin-top:14px"><div class="table-wrap"><table><thead><tr><th>Recebimento ID</th><th>Projeto ID</th><th>Projeto</th><th>Grupo</th><th>Forma</th><th>Parcela</th><th>Autorização</th><th>Previsto</th><th>Recebido</th><th>Data</th><th>Status</th><th>Ações</th></tr></thead><tbody id="receiptsBody"></tbody></table></div></div>
       </section>
 
       <section id="vendas" class="section">
         <div class="title-row"><div><h2>Vendas / Serviços</h2><p>Composição do projeto por passageiro e fornecedor.</p></div><button class="btn btn-primary" onclick="openSaleModal()">+ Nova venda</button></div>
-        <div class="card table-card"><div class="table-wrap"><table><thead><tr><th>Projeto</th><th>Pax / Hóspede</th><th>Fornecedor</th><th>Serviço</th><th>RLOC</th><th>Data viagem</th><th>Valor venda</th><th>Custo fornecedor</th><th>Status</th><th>Ações</th></tr></thead><tbody id="salesBody"></tbody></table></div></div>
+        <div class="card table-card"><div class="table-wrap"><table><thead><tr><th>Venda ID</th><th>Projeto ID</th><th>Projeto</th><th>Pax / Hóspede</th><th>Fornecedor</th><th>Serviço</th><th>RLOC</th><th>Data viagem</th><th>Valor venda</th><th>Custo fornecedor</th><th>Status</th><th>Ações</th></tr></thead><tbody id="salesBody"></tbody></table></div></div>
       </section>
 
       <section id="fornecedores" class="section">
         <div class="title-row"><div><h2>Pagamentos a fornecedores</h2><p>Agende os pagamentos e acompanhe os alertas enviados ao Financeiro.</p></div><button class="btn btn-primary" onclick="openSupplierModal()">+ Registrar pagamento</button></div>
         <div class="note">Pagamentos com status <strong>Agendado</strong> entram na régua de alerta 15 dias antes do vencimento. O Apps Script também pode enviar o aviso automaticamente ao Financeiro todos os dias.</div>
         <div id="paymentAlertBoard" class="alert-board"></div>
-        <div class="card table-card"><div class="table-wrap"><table><thead><tr><th>Projeto</th><th>Fornecedor</th><th>RLOC</th><th>Moeda</th><th>Valor moeda</th><th>Pago em R$</th><th>Data</th><th>Comprovante</th><th>Status</th><th>Ações</th></tr></thead><tbody id="supplierBody"></tbody></table></div></div>
+        <div class="card table-card"><div class="table-wrap"><table><thead><tr><th>Pagamento ID</th><th>Projeto ID</th><th>Venda ID</th><th>Projeto</th><th>Fornecedor</th><th>RLOC</th><th>Moeda</th><th>Valor moeda</th><th>Pago em R$</th><th>Data</th><th>Comprovante</th><th>Status</th><th>Ações</th></tr></thead><tbody id="supplierBody"></tbody></table></div></div>
       </section>
 
       <section id="relatorios" class="section">
@@ -1040,6 +1080,7 @@
       <form id="projectForm">
         <input type="hidden" name="id">
         <div class="form-grid">
+          <div class="field record-id-field" style="display:none"><label>ID do registro</label><input name="idDisplay" readonly></div>
           <div class="field"><label>Nome do projeto *</label><input name="nomeProjeto" required placeholder="Ex.: Viagem Convenção Novembro 2026"></div>
           <div class="field"><label>BKO *</label><input name="bko" required inputmode="numeric" maxlength="6" pattern="\d{1,6}" placeholder="Até 6 números"></div>
           <div class="field"><label>Cliente / Empresa *</label><input name="cliente" required></div>
@@ -1064,6 +1105,8 @@
       <form id="receiptForm">
         <input type="hidden" name="id">
         <div class="form-grid">
+          <div class="field record-id-field" style="display:none"><label>Recebimento ID</label><input name="idDisplay" readonly></div>
+          <div class="field installment-existing-field" style="display:none"><label>Grupo de recebimento</label><input name="grupoId" readonly></div>
           <div class="field"><label>Projeto *</label><select name="projetoId" class="projectSelect" required></select></div>
           <div class="field"><label>Forma de recebimento *</label><select name="forma" required onchange="toggleCardFields(this.form)"><option>PIX</option><option>Faturado</option><option>Cartão de crédito à vista</option><option>Cartão de crédito parcelado</option></select></div>
           <div class="field"><label id="receiptValueLabel">Valor previsto *</label><input type="text" inputmode="decimal" class="money-input" name="valorPrevisto" required placeholder="0,00"></div>
@@ -1091,6 +1134,7 @@
       <form id="saleForm">
         <input type="hidden" name="id">
         <div class="form-grid">
+          <div class="field record-id-field" style="display:none"><label>Venda ID</label><input name="idDisplay" readonly></div>
           <div class="field"><label>Projeto *</label><select name="projetoId" class="projectSelect" required></select></div>
           <div class="field"><label>Pax / Hóspede *</label><input name="pax" required></div>
           <div class="field"><label>Fornecedor *</label><input name="fornecedor" required></div>
@@ -1115,7 +1159,9 @@
       <form id="supplierForm">
         <input type="hidden" name="id">
         <div class="form-grid">
-          <div class="field"><label>Projeto *</label><select name="projetoId" class="projectSelect" required></select></div>
+          <div class="field record-id-field" style="display:none"><label>Pagamento ID</label><input name="idDisplay" readonly></div>
+          <div class="field"><label>Projeto *</label><select name="projetoId" class="projectSelect" required onchange="syncSupplierSaleOptions(this.form)"></select></div>
+          <div class="field"><label>Venda vinculada</label><select name="vendaId" class="saleSelect"><option value="">Projeto geral / sem venda específica</option></select></div>
           <div class="field"><label>Fornecedor *</label><input name="fornecedor" required></div>
           <div class="field"><label>RLOC</label><input name="rloc"></div>
           <div class="field"><label>Moeda *</label><select name="moeda" required>
@@ -1249,6 +1295,7 @@
   function renderAll(){
     renderProjectSelects(); renderProjects(); renderReceipts(); renderSales(); renderSupplier(); renderReport(); renderDashboard(); renderPaymentAlerts(); renderReportProjectSelect();
     renderDetailProjectSelect();
+    renderIntegrity();
     if(selectedDetailProjectId) renderProjectDetail(selectedDetailProjectId);
   }
 
@@ -1269,32 +1316,32 @@
     const q=(id("filterProject")?.value||"").toLowerCase(); const st=id("filterStatus")?.value||"";
     const rows=state.projects.filter(p=>!q||[p.nomeProjeto,p.cliente,p.bko,p.consultor].join(" ").toLowerCase().includes(q)).filter(p=>!st||p.status===st);
     id("projectsBody").innerHTML=rows.length?rows.map(p=>{const s=summaryByProject(p.id);return `<tr>
-      <td><strong>${esc(p.nomeProjeto)}</strong></td><td>${esc(p.bko)}</td><td>${esc(p.cliente)}</td>
+      <td><span class="id-badge primary">${esc(p.id)}</span></td><td><strong>${esc(p.nomeProjeto)}</strong></td><td>${esc(p.bko)}</td><td>${esc(p.cliente)}</td>
       <td>${dateBR(p.dataInicio)} → ${dateBR(p.dataFim)}</td><td>${esc(p.consultor)}</td>
       <td>${money(p.valorAntecipado)}</td><td>${money(s.recebido)}</td><td>${money(s.vendas)}</td><td><strong>${money(s.saldoCaixa)}</strong></td><td>${badge(p.status)}</td>
-      <td><div class="actions"><button class="project-open-btn" onclick="openProjectDetail('${p.id}')">Detalhes</button><button onclick="editProject('${p.id}')">Editar</button><button onclick="deleteItem('project','${p.id}')">Excluir</button></div></td></tr>`}).join(""):`<tr><td colspan="11" class="empty">Nenhum projeto encontrado.</td></tr>`;
+      <td><div class="actions"><button class="project-open-btn" onclick="openProjectDetail('${p.id}')">Detalhes</button><button onclick="editProject('${p.id}')">Editar</button><button onclick="deleteItem('project','${p.id}')">Excluir</button></div></td></tr>`}).join(""):`<tr><td colspan="12" class="empty">Nenhum projeto encontrado.</td></tr>`;
   }
 
   function projectName(pid){ const p=state.projects.find(x=>String(x.id)===String(pid)); return p?p.nomeProjeto:"-"; }
 
   function renderReceipts(){
     id("receiptsBody").innerHTML=state.receipts.length?state.receipts.map(r=>`<tr>
-      <td>${esc(projectName(r.projetoId))}</td><td>${esc(r.forma)}</td><td>${esc(r.parcela||"-")}</td><td>${esc(r.autorizacao||"-")}</td>
+      <td><span class="id-badge">${esc(r.id)}</span></td><td><span class="id-badge primary">${esc(r.projetoId)}</span></td><td>${esc(projectName(r.projetoId))}</td><td>${r.grupoId?`<span class="id-badge">${esc(r.grupoId)}</span>`:"-"}</td><td>${esc(r.forma)}</td><td>${esc(r.parcela||"-")}</td><td>${esc(r.autorizacao||"-")}</td>
       <td>${money(r.valorPrevisto)}</td><td>${money(r.valorRecebido)}</td><td>${dateBR(r.dataRecebimento||r.dataPrevista)}</td><td>${badge(r.status)}</td>
-      <td><div class="actions"><button onclick="editReceipt('${r.id}')">Editar</button><button onclick="deleteItem('receipt','${r.id}')">Excluir</button></div></td></tr>`).join(""):`<tr><td colspan="9" class="empty">Nenhum recebimento.</td></tr>`;
+      <td><div class="actions"><button onclick="editReceipt('${r.id}')">Editar</button><button onclick="deleteItem('receipt','${r.id}')">Excluir</button></div></td></tr>`).join(""):`<tr><td colspan="13" class="empty">Nenhum recebimento.</td></tr>`;
   }
 
   function renderSales(){
     id("salesBody").innerHTML=state.sales.length?state.sales.map(s=>`<tr>
-      <td>${esc(projectName(s.projetoId))}</td><td>${esc(s.pax)}</td><td>${esc(s.fornecedor)}</td><td>${esc(s.servico)}</td><td>${esc(s.rloc)}</td>
+      <td><span class="id-badge">${esc(s.id)}</span></td><td><span class="id-badge primary">${esc(s.projetoId)}</span></td><td>${esc(projectName(s.projetoId))}</td><td>${esc(s.pax)}</td><td>${esc(s.fornecedor)}</td><td>${esc(s.servico)}</td><td>${esc(s.rloc)}</td>
       <td>${dateBR(s.dataServico)}</td><td>${money(s.valorVenda)}</td><td>${money(s.custoFornecedor)}</td><td>${badge(s.status)}</td>
-      <td><div class="actions"><button onclick="editSale('${s.id}')">Editar</button><button onclick="deleteItem('sale','${s.id}')">Excluir</button></div></td></tr>`).join(""):`<tr><td colspan="10" class="empty">Nenhuma venda.</td></tr>`;
+      <td><div class="actions"><button onclick="editSale('${s.id}')">Editar</button><button onclick="deleteItem('sale','${s.id}')">Excluir</button></div></td></tr>`).join(""):`<tr><td colspan="12" class="empty">Nenhuma venda.</td></tr>`;
   }
 
   function renderSupplier(){
     id("supplierBody").innerHTML=state.supplierPayments.length?state.supplierPayments.map(s=>`<tr>
-      <td>${esc(projectName(s.projetoId))}</td><td>${esc(s.fornecedor)}</td><td>${esc(s.rloc||"-")}</td><td>${esc(s.moeda||"BRL")}</td><td>${moneyCurrency(s.valor,s.moeda||"BRL")}</td><td>${s.valorPagoBRL?money(s.valorPagoBRL):"-"}</td><td>${dateBR(s.dataPagamento)}</td><td>${esc(s.comprovante||"-")}</td><td>${badge(s.status)}</td>
-      <td><div class="actions">${s.status==="Agendado"?`<button class="project-open-btn" onclick="sendPaymentToFinance('${s.id}')">Enviar Financeiro</button>`:""}<button onclick="editSupplier('${s.id}')">Editar</button><button onclick="deleteItem('supplier','${s.id}')">Excluir</button></div></td></tr>`).join(""):`<tr><td colspan="10" class="empty">Nenhum pagamento.</td></tr>`;
+      <td><span class="id-badge">${esc(s.id)}</span></td><td><span class="id-badge primary">${esc(s.projetoId)}</span></td><td>${s.vendaId?`<span class="id-badge">${esc(s.vendaId)}</span>`:"-"}</td><td>${esc(projectName(s.projetoId))}</td><td>${esc(s.fornecedor)}</td><td>${esc(s.rloc||"-")}</td><td>${esc(s.moeda||"BRL")}</td><td>${moneyCurrency(s.valor,s.moeda||"BRL")}</td><td>${s.valorPagoBRL?money(s.valorPagoBRL):"-"}</td><td>${dateBR(s.dataPagamento)}</td><td>${esc(s.comprovante||"-")}</td><td>${badge(s.status)}</td>
+      <td><div class="actions">${s.status==="Agendado"?`<button class="project-open-btn" onclick="sendPaymentToFinance('${s.id}')">Enviar Financeiro</button>`:""}<button onclick="editSupplier('${s.id}')">Editar</button><button onclick="deleteItem('supplier','${s.id}')">Excluir</button></div></td></tr>`).join(""):`<tr><td colspan="13" class="empty">Nenhum pagamento.</td></tr>`;
   }
 
   function renderReport(){
@@ -1360,7 +1407,7 @@
     const p=state.projects.find(x=>String(x.id)===String(projectId)); if(!p) throw new Error("Selecione um projeto.");
     const s=summaryByProject(p.id), recs=state.receipts.filter(x=>String(x.projetoId)===String(p.id)), sales=state.sales.filter(x=>String(x.projetoId)===String(p.id)), pays=state.supplierPayments.filter(x=>String(x.projetoId)===String(p.id));
     const receiptRows=recs.map(r=>`<tr><td>${esc(r.forma)}</td><td>${esc(r.parcela||"-")}</td><td>${esc(r.autorizacao||"-")}</td><td>${fmtDateBR(r.dataPrevista)}</td><td>${money(r.valorPrevisto)}</td><td>${money(r.valorRecebido)}</td><td>${esc(r.status)}</td></tr>`).join("")||'<tr><td colspan="7">Sem recebimentos.</td></tr>';
-    const saleRows=sales.map(v=>`<tr><td>${esc(v.pax)}</td><td>${esc(v.servico)}</td><td>${esc(v.fornecedor)}</td><td>${esc(v.rloc)}</td><td>${fmtDateBR(v.dataServico)}</td><td>${money(v.valorVenda)}</td><td>${money(v.custoFornecedor)}</td><td>${esc(v.status)}</td></tr>`).join("")||'<tr><td colspan="8">Sem vendas.</td></tr>';
+    const saleRows=sales.map(v=>`<tr><td><span class="id-badge">${esc(v.id)}</span></td><td>${esc(v.pax)}</td><td>${esc(v.servico)}</td><td>${esc(v.fornecedor)}</td><td>${esc(v.rloc)}</td><td>${fmtDateBR(v.dataServico)}</td><td>${money(v.valorVenda)}</td><td>${money(v.custoFornecedor)}</td><td>${esc(v.status)}</td></tr>`).join("")||'<tr><td colspan="8">Sem vendas.</td></tr>';
     const payRows=pays.map(v=>`<tr><td>${esc(v.fornecedor)}</td><td>${esc(v.rloc||"-")}</td><td>${fmtDateBR(v.dataPagamento)}</td><td>${money(v.valor)}</td><td>${esc(v.comprovante||"-")}</td><td>${esc(v.status)}</td></tr>`).join("")||'<tr><td colspan="6">Sem pagamentos.</td></tr>';
     const diff=Number(p.valorAntecipado||0)-Number(s.vendas||0); const situation=diff>0?`Saldo comercial ainda não utilizado: ${money(diff)}`:diff<0?`Diferença a cobrar do cliente: ${money(Math.abs(diff))}`:"Vendas equivalentes ao valor antecipado.";
     return `<div class="pdf-report">${reportHeader("Relatório Detalhado do Projeto",p.nomeProjeto)}
@@ -1519,13 +1566,13 @@
     </div>`).join(""):'<div class="detail-empty">Nenhum passageiro vinculado.</div>';
 
     id("detailSalesBody").innerHTML=projectSales.length?projectSales.map(v=>`<tr>
-      <td>${esc(v.pax)}</td><td>${esc(v.servico)}</td><td>${esc(v.fornecedor)}</td><td>${esc(v.rloc)}</td>
+      <td><span class="id-badge">${esc(v.id)}</span></td><td>${esc(v.pax)}</td><td>${esc(v.servico)}</td><td>${esc(v.fornecedor)}</td><td>${esc(v.rloc)}</td>
       <td>${dateBR(v.dataServico)}</td><td>${money(v.valorVenda)}</td><td>${money(v.custoFornecedor)}</td><td>${badge(v.status)}</td>
-    </tr>`).join(""):`<tr><td colspan="8" class="detail-empty">Nenhuma venda cadastrada.</td></tr>`;
+    </tr>`).join(""):`<tr><td colspan="9" class="detail-empty">Nenhuma venda cadastrada.</td></tr>`;
 
     id("detailSupplierBody").innerHTML=projectPayments.length?projectPayments.map(v=>`<tr>
-      <td>${esc(v.fornecedor)}</td><td>${esc(v.rloc||"-")}</td><td>${esc(v.moeda||"BRL")}</td><td>${moneyCurrency(v.valor,v.moeda||"BRL")}</td><td>${v.valorPagoBRL?money(v.valorPagoBRL):"-"}</td><td>${dateBR(v.dataPagamento)}</td><td>${esc(v.comprovante||"-")}</td><td>${badge(v.status)}</td>
-    </tr>`).join(""):`<tr><td colspan="8" class="detail-empty">Nenhum pagamento cadastrado.</td></tr>`;
+      <td><span class="id-badge">${esc(v.id)}</span></td><td>${v.vendaId?`<span class="id-badge">${esc(v.vendaId)}</span>`:"-"}</td><td>${esc(v.fornecedor)}</td><td>${esc(v.rloc||"-")}</td><td>${esc(v.moeda||"BRL")}</td><td>${moneyCurrency(v.valor,v.moeda||"BRL")}</td><td>${v.valorPagoBRL?money(v.valorPagoBRL):"-"}</td><td>${dateBR(v.dataPagamento)}</td><td>${esc(v.comprovante||"-")}</td><td>${badge(v.status)}</td>
+    </tr>`).join(""):`<tr><td colspan="10" class="detail-empty">Nenhum pagamento cadastrado.</td></tr>`;
   }
 
   function openReceiptForDetail(){
@@ -1551,7 +1598,44 @@
     openModal("supplierModal");
   }
 
-  ["filterProject","filterStatus"].forEach(x=>document.getElementById(x)?.addEventListener("input",renderProjects));
+
+  function renderIntegrity(){
+    const el=id("integrityText");
+    if(!el) return;
+    const info=state.integrity||{};
+    const orphanReceipts=Number(info.orphanReceipts||0);
+    const orphanSales=Number(info.orphanSales||0);
+    const orphanPayments=Number(info.orphanPayments||0);
+    const brokenSaleLinks=Number(info.brokenSaleLinks||0);
+    const total=orphanReceipts+orphanSales+orphanPayments+brokenSaleLinks;
+    if(total===0){
+      el.innerHTML='Todos os registros carregados possuem vínculo válido com seus projetos.';
+    }else{
+      el.innerHTML=`Foram encontrados <strong>${total}</strong> vínculo(s) para revisar: ${orphanReceipts} recebimento(s), ${orphanSales} venda(s), ${orphanPayments} pagamento(s) órfão(s) e ${brokenSaleLinks} vínculo(s) de venda inválido(s).`;
+    }
+  }
+
+  async function refreshIntegrity(){
+    try{
+      const info=await api("auditIntegrity",{},"GET");
+      state.integrity=info;
+      renderIntegrity();
+      alert(info.totalIssues ? `Auditoria concluída: ${info.totalIssues} vínculo(s) precisam de revisão.` : "Auditoria concluída: vínculos íntegros.");
+    }catch(e){ alert("Erro ao validar vínculos: "+e.message); }
+  }
+
+  function syncSupplierSaleOptions(form){
+    const projectId=form.elements["projetoId"].value;
+    const sel=form.elements["vendaId"];
+    if(!sel) return;
+    const current=sel.value;
+    const sales=state.sales.filter(v=>String(v.projetoId)===String(projectId) && v.status!=="Cancelado");
+    sel.innerHTML='<option value="">Projeto geral / sem venda específica</option>'+
+      sales.map(v=>`<option value="${esc(v.id)}">${esc(v.id)} — ${esc(v.rloc)} — ${esc(v.fornecedor)} — ${esc(v.pax)}</option>`).join("");
+    if(current && sales.some(v=>String(v.id)===String(current))) sel.value=current;
+  }
+
+    ["filterProject","filterStatus"].forEach(x=>document.getElementById(x)?.addEventListener("input",renderProjects));
 
   function openModal(m){ id(m).classList.add("show"); }
   function closeModal(m){ id(m).classList.remove("show"); }
@@ -1600,8 +1684,32 @@
   function editProject(x){const o=state.projects.find(i=>String(i.id)===String(x));fillForm(id("projectForm"),o);id("projectModal").querySelector(".modal-head strong").textContent="Editar projeto";openModal("projectModal")}
   function editReceipt(x){const o=state.receipts.find(i=>String(i.id)===String(x));fillForm(id("receiptForm"),o);id("receiptModal").querySelector(".modal-head strong").textContent="Editar parcela / recebimento";toggleCardFields(id("receiptForm"));openModal("receiptModal")}
   function editSale(x){const o=state.sales.find(i=>String(i.id)===String(x));fillForm(id("saleForm"),o);openModal("saleModal")}
-  function editSupplier(x){const o=state.supplierPayments.find(i=>String(i.id)===String(x));fillForm(id("supplierForm"),o);openModal("supplierModal")}
-  async function deleteItem(type,itemId){ if(!confirm("Deseja realmente excluir este registro?"))return; try{await api("deleteItem",{type,id:itemId},"POST");await loadAll()}catch(e){alert(e.message)} }
+  function editSupplier(x){
+    const o=state.supplierPayments.find(i=>String(i.id)===String(x));
+    fillForm(id("supplierForm"),o);
+    syncSupplierSaleOptions(id("supplierForm"));
+    if(o.vendaId) id("supplierForm").elements["vendaId"].value=o.vendaId;
+    openModal("supplierModal")
+  }
+  async function deleteItem(type,itemId){
+    let msg="Deseja realmente excluir este registro?";
+    if(type==="project"){
+      const p=state.projects.find(x=>String(x.id)===String(itemId));
+      const rc=state.receipts.filter(x=>String(x.projetoId)===String(itemId)).length;
+      const sc=state.sales.filter(x=>String(x.projetoId)===String(itemId)).length;
+      const pc=state.supplierPayments.filter(x=>String(x.projetoId)===String(itemId)).length;
+      msg=`ATENÇÃO: excluir o projeto ${p?p.nomeProjeto:itemId} excluirá também ${rc} recebimento(s), ${sc} venda(s) e ${pc} pagamento(s) vinculados.\n\nDeseja continuar?`;
+    }
+    if(!confirm(msg))return;
+    try{
+      const result=await api("deleteItem",{type,id:itemId},"POST");
+      if(type==="project" && result && result.deleted){
+        alert(`Projeto excluído com seus vínculos: ${result.deleted.receipts||0} recebimento(s), ${result.deleted.sales||0} venda(s) e ${result.deleted.payments||0} pagamento(s).`);
+      }
+      if(String(selectedDetailProjectId)===String(itemId)) selectedDetailProjectId="";
+      await loadAll();
+    }catch(e){alert(e.message)}
+  }
 
   // Demonstração automática antes da URL do Apps Script ser configurada.
   function mockApi(action,payload){
