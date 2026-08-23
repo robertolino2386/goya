@@ -772,6 +772,38 @@
     }
     .integrity-box strong{color:var(--text)}
 
+
+    .pdf-report-table{
+      width:100%;
+      border-collapse:collapse;
+      table-layout:fixed;
+      font-size:9px;
+    }
+    .pdf-report-table th,
+    .pdf-report-table td{
+      padding:7px 8px;
+      border-bottom:1px solid #e5e1dc;
+      vertical-align:middle;
+      overflow-wrap:anywhere;
+    }
+    .pdf-report-table th{
+      background:#29475C;
+      color:#fff;
+      font-family:"Montserrat",Arial,sans-serif;
+      font-weight:700;
+      font-size:8px;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .pdf-report-table .id-col{width:11%}
+    .pdf-report-table .pax-col{width:13%}
+    .pdf-report-table .service-col{width:11%}
+    .pdf-report-table .supplier-col{width:17%}
+    .pdf-report-table .rloc-col{width:9%}
+    .pdf-report-table .date-col{width:10%}
+    .pdf-report-table .money-col{width:10%}
+    .pdf-report-table .status-col{width:9%}
+
     @media(max-width:1100px){
       .kpis{grid-template-columns:repeat(2,1fr)}
       .two-col{grid-template-columns:1fr}
@@ -1461,7 +1493,7 @@
       <div class="pdf-kpis">${pdfKpi("Antecipado",money(p.valorAntecipado))}${pdfKpi("Recebido",money(s.recebido))}${pdfKpi("Vendas",money(s.vendas))}${pdfKpi("Pago fornecedores",money(s.pago))}${pdfKpi("A receber",money(s.aReceber))}${pdfKpi("Saldo em caixa",money(s.saldoCaixa))}</div>
       <div class="pdf-project"><strong>Situação atual:</strong> ${esc(situation)}</div>
       <h2>Recebimentos e parcelas</h2><table><thead><tr><th>Forma</th><th>Parcela</th><th>Autorização</th><th>Vencimento</th><th>Previsto</th><th>Recebido</th><th>Status</th></tr></thead><tbody>${receiptRows}</tbody></table>
-      <h2>Vendas e serviços</h2><table><thead><tr><th>Pax</th><th>Serviço</th><th>Fornecedor</th><th>RLOC</th><th>Data</th><th>Venda</th><th>Custo</th><th>Status</th></tr></thead><tbody>${saleRows}</tbody></table>
+      <h2>Vendas e serviços</h2><table class="pdf-report-table"><thead><tr><th>Venda ID</th><th>Pax</th><th>Serviço</th><th>Fornecedor</th><th>RLOC</th><th>Data</th><th>Venda</th><th>Custo</th><th>Status</th></tr></thead><tbody>${saleRows}</tbody></table>
       <h2>Pagamentos a fornecedores</h2><table><thead><tr><th>Fornecedor</th><th>RLOC</th><th>Data</th><th>Valor</th><th>Comprovante</th><th>Status</th></tr></thead><tbody>${payRows}</tbody></table>
       <div class="pdf-footer">GOYA BY COPASTUR • Dossiê financeiro do projeto • Documento confidencial</div></div>`;
   }
