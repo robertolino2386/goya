@@ -721,6 +721,21 @@
       .detail-kpis{grid-template-columns:repeat(3,1fr)}
     }
 
+
+    .alert-board{display:grid;gap:9px;margin:14px 0 18px}
+    .alert-payment{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:13px 14px;border:1px solid var(--border);border-left:3px solid var(--warning);border-radius:12px;background:var(--card)}
+    .alert-payment strong{font-size:11px}.alert-payment p{margin:4px 0 0;font-size:10px;color:var(--muted);line-height:1.5}.alert-payment .days{font-family:"Novecento Sans Wide","Montserrat",sans-serif;font-size:17px;color:var(--warning);white-space:nowrap}
+    .report-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:18px}
+    .report-option{padding:20px;position:relative;overflow:hidden}
+    .report-option::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--primary)}
+    .report-option.secondary::before{background:var(--secondary)}
+    .report-option h3{margin:0 0 7px;font-size:17px;font-weight:400}.report-option p{margin:0 0 15px;color:var(--muted);font-size:10px;line-height:1.65}.report-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.report-actions select{max-width:360px}
+    .report-summary-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:16px 0}.report-summary-strip .mini{background:var(--card)}
+    #reportPrintMount{position:fixed;left:-100000px;top:0;width:1100px;background:#fff;color:#231f20;z-index:-1}
+    .pdf-report{font-family:"Montserrat",Arial,sans-serif;background:#fff;color:#231f20;padding:38px;line-height:1.45}
+    .pdf-report *{box-sizing:border-box}.pdf-report .pdf-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #8A391B;padding-bottom:20px;margin-bottom:22px}.pdf-report .pdf-logo{width:105px;height:auto}.pdf-report h1,.pdf-report h2,.pdf-report h3{font-family:"Caviar Dreams","Montserrat",sans-serif;font-weight:400}.pdf-report h1{font-size:25px;margin:0}.pdf-report h2{font-size:18px;margin:26px 0 10px;color:#8A391B}.pdf-report h3{font-size:14px}.pdf-report .pdf-muted{color:#6f6a66;font-size:11px}.pdf-report .pdf-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.pdf-report .pdf-kpi{border:1px solid #ded8d2;border-top:3px solid #29475C;padding:12px}.pdf-report .pdf-kpi:nth-child(odd){border-top-color:#8A391B}.pdf-report .pdf-kpi span{display:block;font-size:9px;color:#6f6a66;text-transform:uppercase}.pdf-report .pdf-kpi strong{display:block;font-family:"Novecento Sans Wide","Montserrat",sans-serif;font-size:16px;margin-top:5px}.pdf-report table{width:100%;border-collapse:collapse;margin:8px 0 18px;font-size:9px}.pdf-report th{background:#29475C;color:#fff;text-align:left;padding:7px}.pdf-report td{border-bottom:1px solid #e6e0dc;padding:7px;vertical-align:top}.pdf-report .pdf-project{border:1px solid #ded8d2;padding:14px;margin:10px 0}.pdf-report .pdf-footer{border-top:1px solid #ded8d2;margin-top:28px;padding-top:10px;color:#777;font-size:8px;text-align:center}
+    @media(max-width:900px){.report-options{grid-template-columns:1fr}.report-summary-strip{grid-template-columns:repeat(2,1fr)}}
+
     @media(max-width:1100px){
       .kpis{grid-template-columns:repeat(2,1fr)}
       .two-col{grid-template-columns:1fr}
@@ -974,13 +989,45 @@
       </section>
 
       <section id="fornecedores" class="section">
-        <div class="title-row"><div><h2>Pagamentos a fornecedores</h2><p>Pagamento liberado somente com valor recebido disponível.</p></div><button class="btn btn-primary" onclick="openSupplierModal()">+ Registrar pagamento</button></div>
+        <div class="title-row"><div><h2>Pagamentos a fornecedores</h2><p>Agende os pagamentos e acompanhe os alertas enviados ao Financeiro.</p></div><button class="btn btn-primary" onclick="openSupplierModal()">+ Registrar pagamento</button></div>
+        <div class="note">Pagamentos com status <strong>Agendado</strong> entram na régua de alerta 15 dias antes do vencimento. O Apps Script também pode enviar o aviso automaticamente ao Financeiro todos os dias.</div>
+        <div id="paymentAlertBoard" class="alert-board"></div>
         <div class="card table-card"><div class="table-wrap"><table><thead><tr><th>Projeto</th><th>Fornecedor</th><th>RLOC</th><th>Valor</th><th>Data</th><th>Comprovante</th><th>Status</th><th>Ações</th></tr></thead><tbody id="supplierBody"></tbody></table></div></div>
       </section>
 
       <section id="relatorios" class="section">
-        <div class="title-row"><div><h2>Relatório executivo</h2><p>Consolidado para diretoria e gestão financeira.</p></div></div>
+        <div class="title-row"><div><h2>Relatórios executivos</h2><p>Visão financeira consolidada e dossiê completo de cada projeto para a diretoria.</p></div></div>
+
+        <div class="report-options">
+          <div class="card report-option">
+            <h3>Visão consolidada</h3>
+            <p>Apresenta todos os projetos, valores antecipados, recebimentos, vendas, pagamentos, saldos e pendências em uma visão única para o CEO.</p>
+            <div class="report-actions">
+              <button class="btn btn-primary" onclick="exportReportPdf('consolidado')">Exportar PDF</button>
+              <button class="btn btn-light" onclick="sendReportToCEO('consolidado')">Enviar ao CEO</button>
+            </div>
+          </div>
+          <div class="card report-option secondary">
+            <h3>Relatório detalhado por projeto</h3>
+            <p>Gera um dossiê com antecipações, parcelas, passageiros, RLOCs, fornecedores, pagamentos, saldo, alertas e situação atual.</p>
+            <div class="report-actions">
+              <select id="reportProjectSelect"><option value="">Selecione o projeto...</option></select>
+              <button class="btn btn-secondary" onclick="exportReportPdf('detalhado')">Exportar PDF</button>
+              <button class="btn btn-light" onclick="sendReportToCEO('detalhado')">Enviar ao CEO</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-summary-strip">
+          <div class="mini"><span>Projetos</span><strong id="repTotalProjects">0</strong></div>
+          <div class="mini"><span>Antecipado</span><strong id="repTotalAdvance">R$ 0,00</strong></div>
+          <div class="mini"><span>Recebido</span><strong id="repTotalReceived">R$ 0,00</strong></div>
+          <div class="mini"><span>Vendas</span><strong id="repTotalSales">R$ 0,00</strong></div>
+          <div class="mini"><span>Saldo em caixa</span><strong id="repTotalCash">R$ 0,00</strong></div>
+        </div>
+
         <div class="card table-card"><div class="table-wrap"><table><thead><tr><th>Projeto</th><th>Cliente</th><th>Antecipado</th><th>Recebido</th><th>Vendas</th><th>Pago fornecedores</th><th>A receber</th><th>Saldo caixa</th><th>Status</th></tr></thead><tbody id="reportBody"></tbody></table></div></div>
+        <div id="reportPrintMount"></div>
       </section>
     </div>
   </main>
@@ -1019,15 +1066,18 @@
         <div class="form-grid">
           <div class="field"><label>Projeto *</label><select name="projetoId" class="projectSelect" required></select></div>
           <div class="field"><label>Forma de recebimento *</label><select name="forma" required onchange="toggleCardFields(this.form)"><option>PIX</option><option>Faturado</option><option>Cartão de crédito à vista</option><option>Cartão de crédito parcelado</option></select></div>
-          <div class="field"><label>Valor previsto *</label><input type="number" step="0.01" min="0" name="valorPrevisto" required></div>
-          <div class="field card-field"><label>Número da autorização</label><input name="autorizacao"></div>
-          <div class="field card-field"><label>Parcela</label><input name="parcela" placeholder="Ex.: 1/10"></div>
-          <div class="field"><label>Data prevista</label><input type="date" name="dataPrevista"></div>
-          <div class="field"><label>Valor recebido</label><input type="number" step="0.01" min="0" name="valorRecebido"></div>
-          <div class="field"><label>Data do recebimento</label><input type="date" name="dataRecebimento"></div>
-          <div class="field"><label>Status</label><select name="status"><option>Pendente</option><option>Recebido</option><option>Parcial</option><option>Cancelado</option></select></div>
+          <div class="field"><label id="receiptValueLabel">Valor previsto *</label><input type="number" step="0.01" min="0" name="valorPrevisto" required></div>
+          <div class="field card-field"><label>Número da autorização *</label><input name="autorizacao"></div>
+          <div class="field installment-create-field"><label>Quantidade de parcelas *</label><select name="qtdParcelas"><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option><option value="9">9x</option><option value="10">10x</option></select></div>
+          <div class="field installment-create-field"><label>Data da cobrança na maquineta *</label><input type="date" name="dataCobranca"></div>
+          <div class="field installment-existing-field"><label>Parcela</label><input name="parcela" readonly></div>
+          <div class="field single-receipt-field"><label>Data prevista</label><input type="date" name="dataPrevista"></div>
+          <div class="field single-receipt-field"><label>Valor recebido</label><input type="number" step="0.01" min="0" name="valorRecebido"></div>
+          <div class="field single-receipt-field"><label>Data do recebimento</label><input type="date" name="dataRecebimento"></div>
+          <div class="field single-receipt-field"><label>Status</label><select name="status"><option>Pendente</option><option>Recebido</option><option>Parcial</option><option>Cancelado</option></select></div>
           <div class="field span3"><label>Observações</label><textarea name="observacoes" rows="2"></textarea></div>
         </div>
+        <div id="installmentInfo" class="note" style="display:none;margin-top:14px">Ao salvar, o sistema criará automaticamente cada parcela. A primeira vence 30 dias após a cobrança na maquineta e as demais a cada 30 dias.</div>
         <div class="form-actions"><button type="button" class="btn btn-light" onclick="closeModal('receiptModal')">Cancelar</button><button class="btn btn-primary">Salvar recebimento</button></div>
       </form>
     </div>
@@ -1081,11 +1131,12 @@
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
   // COLE A URL DO SEU WEB APP DO APPS SCRIPT AQUI:
-  const API_URL = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyJO-cpd5d2vuHmjUhZLPxAzYlDQM6tFENFV1syriuM9DtFVwVG_bDutNSrL5-2g8mq5g/exec";
 
-  let state = { projects:[], receipts:[], sales:[], supplierPayments:[], summary:[] };
+  let state = { projects:[], receipts:[], sales:[], supplierPayments:[], summary:[], paymentAlerts:[] };
   let selectedDetailProjectId = "";
 
   const money = v => Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
@@ -1132,7 +1183,7 @@
   }
 
   function renderAll(){
-    renderProjectSelects(); renderProjects(); renderReceipts(); renderSales(); renderSupplier(); renderReport(); renderDashboard();
+    renderProjectSelects(); renderProjects(); renderReceipts(); renderSales(); renderSupplier(); renderReport(); renderDashboard(); renderPaymentAlerts(); renderReportProjectSelect();
     renderDetailProjectSelect();
     if(selectedDetailProjectId) renderProjectDetail(selectedDetailProjectId);
   }
@@ -1179,12 +1230,18 @@
   function renderSupplier(){
     id("supplierBody").innerHTML=state.supplierPayments.length?state.supplierPayments.map(s=>`<tr>
       <td>${esc(projectName(s.projetoId))}</td><td>${esc(s.fornecedor)}</td><td>${esc(s.rloc||"-")}</td><td>${money(s.valor)}</td><td>${esc(s.dataPagamento||"-")}</td><td>${esc(s.comprovante||"-")}</td><td>${badge(s.status)}</td>
-      <td><div class="actions"><button onclick="editSupplier('${s.id}')">Editar</button><button onclick="deleteItem('supplier','${s.id}')">Excluir</button></div></td></tr>`).join(""):`<tr><td colspan="8" class="empty">Nenhum pagamento.</td></tr>`;
+      <td><div class="actions">${s.status==="Agendado"?`<button class="project-open-btn" onclick="sendPaymentToFinance('${s.id}')">Enviar Financeiro</button>`:""}<button onclick="editSupplier('${s.id}')">Editar</button><button onclick="deleteItem('supplier','${s.id}')">Excluir</button></div></td></tr>`).join(""):`<tr><td colspan="8" class="empty">Nenhum pagamento.</td></tr>`;
   }
 
   function renderReport(){
     id("reportBody").innerHTML=state.projects.map(p=>{const s=summaryByProject(p.id);return `<tr>
       <td><strong>${esc(p.nomeProjeto)}</strong></td><td>${esc(p.cliente)}</td><td>${money(p.valorAntecipado)}</td><td>${money(s.recebido)}</td><td>${money(s.vendas)}</td><td>${money(s.pago)}</td><td>${money(s.aReceber)}</td><td><strong>${money(s.saldoCaixa)}</strong></td><td>${badge(p.status)}</td></tr>`}).join("")||`<tr><td colspan="9" class="empty">Sem dados.</td></tr>`;
+    const total=k=>state.summary.reduce((a,b)=>a+Number(b[k]||0),0);
+    if(id("repTotalProjects")) id("repTotalProjects").textContent=state.projects.length;
+    if(id("repTotalAdvance")) id("repTotalAdvance").textContent=money(state.projects.reduce((a,p)=>a+Number(p.valorAntecipado||0),0));
+    if(id("repTotalReceived")) id("repTotalReceived").textContent=money(total("recebido"));
+    if(id("repTotalSales")) id("repTotalSales").textContent=money(total("vendas"));
+    if(id("repTotalCash")) id("repTotalCash").textContent=money(total("saldoCaixa"));
   }
 
   function renderDashboard(){
@@ -1201,9 +1258,76 @@
       if(Number(s.pago)>Number(s.recebido)) alerts.push(`Projeto <strong>${esc(p.nomeProjeto)}</strong> possui pagamento a fornecedor maior que o valor efetivamente recebido.`);
       if(Number(s.aReceber)>0) alerts.push(`Projeto <strong>${esc(p.nomeProjeto)}</strong> ainda possui ${money(s.aReceber)} a receber.`);
     });
-    id("alerts").innerHTML=alerts.length?alerts.slice(0,8).map(a=>`<div class="mini" style="margin-bottom:9px">${a}</div>`).join(""):'<div class="mini">Nenhum alerta financeiro no momento.</div>';
+    (state.paymentAlerts||[]).forEach(a=>alerts.unshift(`Pagamento de <strong>${money(a.valor)}</strong> para <strong>${esc(a.fornecedor)}</strong> vence em ${a.diasRestantes} dia(s) no projeto ${esc(projectName(a.projetoId))}.`));
+    id("alerts").innerHTML=alerts.length?alerts.slice(0,10).map(a=>`<div class="mini" style="margin-bottom:9px">${a}</div>`).join(""):'<div class="mini">Nenhum alerta financeiro no momento.</div>';
   }
 
+
+
+  function renderPaymentAlerts(){
+    const box=id("paymentAlertBoard"); if(!box) return;
+    const alerts=state.paymentAlerts||[];
+    box.innerHTML=alerts.length?alerts.map(a=>`<div class="alert-payment"><div><strong>${esc(projectName(a.projetoId))} • ${esc(a.fornecedor)}</strong><p>Pagamento agendado para ${esc(a.dataPagamento)} • ${money(a.valor)} ${a.rloc?`• RLOC ${esc(a.rloc)}`:""}</p></div><div class="days">${a.diasRestantes} dia(s)</div></div>`).join(""):'<div class="mini">Nenhum pagamento entra na janela de alerta dos próximos 15 dias.</div>';
+  }
+
+  function renderReportProjectSelect(){
+    const sel=id("reportProjectSelect"); if(!sel) return;
+    const cur=sel.value;
+    sel.innerHTML='<option value="">Selecione o projeto...</option>'+state.projects.map(p=>`<option value="${esc(p.id)}">${esc(p.nomeProjeto)} — ${esc(p.cliente)}</option>`).join("");
+    if(cur) sel.value=cur;
+  }
+
+  function fmtDateBR(v){ if(!v)return "-"; const m=String(v).match(/^(\d{4})-(\d{2})-(\d{2})/); return m?`${m[3]}/${m[2]}/${m[1]}`:String(v); }
+  function reportHeader(title, subtitle){return `<div class="pdf-head"><div><h1>${esc(title)}</h1><div class="pdf-muted">${esc(subtitle)}</div><div class="pdf-muted">Gerado em ${new Date().toLocaleString("pt-BR")}</div></div><img class="pdf-logo" src="Logo.Goya-PrincipalRGB.png" alt="Goya"></div>`;}
+  function pdfKpi(label,value){return `<div class="pdf-kpi"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`;}
+
+  function buildConsolidatedReportHtml(){
+    const totals={advance:state.projects.reduce((a,p)=>a+Number(p.valorAntecipado||0),0),received:state.summary.reduce((a,s)=>a+Number(s.recebido||0),0),sales:state.summary.reduce((a,s)=>a+Number(s.vendas||0),0),paid:state.summary.reduce((a,s)=>a+Number(s.pago||0),0),receivable:state.summary.reduce((a,s)=>a+Number(s.aReceber||0),0),cash:state.summary.reduce((a,s)=>a+Number(s.saldoCaixa||0),0)};
+    const rows=state.projects.map(p=>{const s=summaryByProject(p.id);return `<tr><td>${esc(p.nomeProjeto)}</td><td>${esc(p.cliente)}</td><td>${esc(p.bko)}</td><td>${money(p.valorAntecipado)}</td><td>${money(s.recebido)}</td><td>${money(s.vendas)}</td><td>${money(s.pago)}</td><td>${money(s.aReceber)}</td><td>${money(s.saldoCaixa)}</td><td>${esc(p.status)}</td></tr>`}).join("");
+    const alerts=(state.paymentAlerts||[]).map(a=>`<tr><td>${esc(projectName(a.projetoId))}</td><td>${esc(a.fornecedor)}</td><td>${fmtDateBR(a.dataPagamento)}</td><td>${money(a.valor)}</td><td>${a.diasRestantes} dia(s)</td></tr>`).join("")||'<tr><td colspan="5">Sem pagamentos na janela de alerta.</td></tr>';
+    return `<div class="pdf-report">${reportHeader("Relatório Executivo Consolidado","Gestão de Projetos e Antecipações")}
+      <div class="pdf-kpis">${pdfKpi("Projetos",String(state.projects.length))}${pdfKpi("Antecipado",money(totals.advance))}${pdfKpi("Recebido",money(totals.received))}${pdfKpi("Vendas",money(totals.sales))}${pdfKpi("Pago fornecedores",money(totals.paid))}${pdfKpi("Saldo em caixa",money(totals.cash))}</div>
+      <h2>Posição consolidada dos projetos</h2><table><thead><tr><th>Projeto</th><th>Cliente</th><th>BKO</th><th>Antecipado</th><th>Recebido</th><th>Vendas</th><th>Pago</th><th>A receber</th><th>Saldo</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
+      <h2>Pagamentos próximos</h2><table><thead><tr><th>Projeto</th><th>Fornecedor</th><th>Vencimento</th><th>Valor</th><th>Prazo</th></tr></thead><tbody>${alerts}</tbody></table>
+      <div class="pdf-footer">GOYA BY COPASTUR • Relatório gerencial confidencial</div></div>`;
+  }
+
+  function buildDetailedReportHtml(projectId){
+    const p=state.projects.find(x=>String(x.id)===String(projectId)); if(!p) throw new Error("Selecione um projeto.");
+    const s=summaryByProject(p.id), recs=state.receipts.filter(x=>String(x.projetoId)===String(p.id)), sales=state.sales.filter(x=>String(x.projetoId)===String(p.id)), pays=state.supplierPayments.filter(x=>String(x.projetoId)===String(p.id));
+    const receiptRows=recs.map(r=>`<tr><td>${esc(r.forma)}</td><td>${esc(r.parcela||"-")}</td><td>${esc(r.autorizacao||"-")}</td><td>${fmtDateBR(r.dataPrevista)}</td><td>${money(r.valorPrevisto)}</td><td>${money(r.valorRecebido)}</td><td>${esc(r.status)}</td></tr>`).join("")||'<tr><td colspan="7">Sem recebimentos.</td></tr>';
+    const saleRows=sales.map(v=>`<tr><td>${esc(v.pax)}</td><td>${esc(v.servico)}</td><td>${esc(v.fornecedor)}</td><td>${esc(v.rloc)}</td><td>${fmtDateBR(v.dataServico)}</td><td>${money(v.valorVenda)}</td><td>${money(v.custoFornecedor)}</td><td>${esc(v.status)}</td></tr>`).join("")||'<tr><td colspan="8">Sem vendas.</td></tr>';
+    const payRows=pays.map(v=>`<tr><td>${esc(v.fornecedor)}</td><td>${esc(v.rloc||"-")}</td><td>${fmtDateBR(v.dataPagamento)}</td><td>${money(v.valor)}</td><td>${esc(v.comprovante||"-")}</td><td>${esc(v.status)}</td></tr>`).join("")||'<tr><td colspan="6">Sem pagamentos.</td></tr>';
+    const diff=Number(p.valorAntecipado||0)-Number(s.vendas||0); const situation=diff>0?`Saldo comercial ainda não utilizado: ${money(diff)}`:diff<0?`Diferença a cobrar do cliente: ${money(Math.abs(diff))}`:"Vendas equivalentes ao valor antecipado.";
+    return `<div class="pdf-report">${reportHeader("Relatório Detalhado do Projeto",p.nomeProjeto)}
+      <div class="pdf-project"><h3>${esc(p.cliente)}</h3><div class="pdf-muted">Projeto ${esc(p.id)} • BKO ${esc(p.bko)} • Consultor ${esc(p.consultor)} • Viagem ${fmtDateBR(p.dataInicio)} a ${fmtDateBR(p.dataFim)} • Status ${esc(p.status)}</div></div>
+      <div class="pdf-kpis">${pdfKpi("Antecipado",money(p.valorAntecipado))}${pdfKpi("Recebido",money(s.recebido))}${pdfKpi("Vendas",money(s.vendas))}${pdfKpi("Pago fornecedores",money(s.pago))}${pdfKpi("A receber",money(s.aReceber))}${pdfKpi("Saldo em caixa",money(s.saldoCaixa))}</div>
+      <div class="pdf-project"><strong>Situação atual:</strong> ${esc(situation)}</div>
+      <h2>Recebimentos e parcelas</h2><table><thead><tr><th>Forma</th><th>Parcela</th><th>Autorização</th><th>Vencimento</th><th>Previsto</th><th>Recebido</th><th>Status</th></tr></thead><tbody>${receiptRows}</tbody></table>
+      <h2>Vendas e serviços</h2><table><thead><tr><th>Pax</th><th>Serviço</th><th>Fornecedor</th><th>RLOC</th><th>Data</th><th>Venda</th><th>Custo</th><th>Status</th></tr></thead><tbody>${saleRows}</tbody></table>
+      <h2>Pagamentos a fornecedores</h2><table><thead><tr><th>Fornecedor</th><th>RLOC</th><th>Data</th><th>Valor</th><th>Comprovante</th><th>Status</th></tr></thead><tbody>${payRows}</tbody></table>
+      <div class="pdf-footer">GOYA BY COPASTUR • Dossiê financeiro do projeto • Documento confidencial</div></div>`;
+  }
+
+  async function exportReportPdf(type){
+    try{
+      if(typeof html2pdf==="undefined") throw new Error("Biblioteca de PDF não carregou. Verifique sua conexão e tente novamente.");
+      let htmlReport, filename;
+      if(type==="consolidado"){htmlReport=buildConsolidatedReportHtml();filename=`Goya_Relatorio_Consolidado_${new Date().toISOString().slice(0,10)}.pdf`;}
+      else{const pid=id("reportProjectSelect").value;if(!pid)throw new Error("Selecione o projeto para gerar o relatório detalhado.");const p=state.projects.find(x=>String(x.id)===String(pid));htmlReport=buildDetailedReportHtml(pid);filename=`Goya_Projeto_${String(p.nomeProjeto).replace(/[^a-zA-Z0-9_-]+/g,"_")}.pdf`;}
+      const mount=id("reportPrintMount");mount.innerHTML=htmlReport;const el=mount.firstElementChild;
+      await html2pdf().set({margin:7,filename,image:{type:"jpeg",quality:.96},html2canvas:{scale:1.5,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"landscape"},pagebreak:{mode:["css","legacy"]}}).from(el).save();
+      mount.innerHTML="";
+    }catch(e){alert(e.message)}
+  }
+
+  async function sendReportToCEO(type){
+    try{const projectId=type==="detalhado"?id("reportProjectSelect").value:"";if(type==="detalhado"&&!projectId)throw new Error("Selecione o projeto.");if(!confirm("Enviar este relatório por e-mail ao CEO configurado no Apps Script?"))return;await api("sendReportEmail",{type,projectId},"POST");alert("Relatório enviado ao CEO com sucesso.");}catch(e){alert(e.message)}
+  }
+
+  async function sendPaymentToFinance(paymentId){
+    try{if(!confirm("Enviar agora este pagamento agendado para o Financeiro?"))return;await api("sendPaymentAlert",{paymentId},"POST");alert("Alerta enviado ao Financeiro.");await loadAll();}catch(e){alert(e.message)}
+  }
 
   function showPage(pageId){
     document.querySelectorAll(".menu button").forEach(x=>x.classList.toggle("active",x.dataset.page===pageId));
@@ -1343,6 +1467,7 @@
   function openReceiptForDetail(){
     if(!selectedDetailProjectId) return alert("Selecione um projeto.");
     id("receiptForm").reset();
+    id("receiptForm").elements["id"].value="";
     id("receiptForm").elements["projetoId"].value=selectedDetailProjectId;
     toggleCardFields(id("receiptForm"));
     openModal("receiptModal");
@@ -1366,14 +1491,24 @@
 
   function openModal(m){ id(m).classList.add("show"); }
   function closeModal(m){ id(m).classList.remove("show"); }
-  function openProjectModal(){ id("projectForm").reset(); openModal("projectModal"); }
-  function openReceiptModal(){ id("receiptForm").reset(); toggleCardFields(id("receiptForm")); openModal("receiptModal"); }
-  function openSaleModal(){ id("saleForm").reset(); openModal("saleModal"); }
-  function openSupplierModal(){ id("supplierForm").reset(); openModal("supplierModal"); }
+  function openProjectModal(){ const f=id("projectForm"); f.reset(); f.elements["id"].value=""; id("projectModal").querySelector(".modal-head strong").textContent="Novo projeto"; openModal("projectModal"); }
+  function openReceiptModal(){ const f=id("receiptForm"); f.reset(); f.elements["id"].value=""; id("receiptModal").querySelector(".modal-head strong").textContent="Novo recebimento"; toggleCardFields(f); openModal("receiptModal"); }
+  function openSaleModal(){ const f=id("saleForm"); f.reset(); f.elements["id"].value=""; openModal("saleModal"); }
+  function openSupplierModal(){ const f=id("supplierForm"); f.reset(); f.elements["id"].value=""; openModal("supplierModal"); }
 
   function toggleCardFields(form){
     const isCard=form.forma.value.includes("Cartão");
+    const isInstallment=form.forma.value==="Cartão de crédito parcelado";
+    const editing=!!form.elements["id"].value;
     form.querySelectorAll(".card-field").forEach(x=>x.style.display=isCard?"block":"none");
+    form.querySelectorAll(".installment-create-field").forEach(x=>x.style.display=(isInstallment&&!editing)?"block":"none");
+    form.querySelectorAll(".installment-existing-field").forEach(x=>x.style.display=(isInstallment&&editing)?"block":"none");
+    form.querySelectorAll(".single-receipt-field").forEach(x=>x.style.display=(!isInstallment||editing)?"block":"none");
+    const info=id("installmentInfo"); if(info) info.style.display=(isInstallment&&!editing)?"block":"none";
+    const lbl=id("receiptValueLabel"); if(lbl) lbl.textContent=(isInstallment&&!editing)?"Valor total do parcelamento *":"Valor previsto *";
+    if(form.elements["autorizacao"]) form.elements["autorizacao"].required=isCard;
+    if(form.elements["qtdParcelas"]) form.elements["qtdParcelas"].required=isInstallment&&!editing;
+    if(form.elements["dataCobranca"]) form.elements["dataCobranca"].required=isInstallment&&!editing;
   }
 
   function formData(form){ return Object.fromEntries(new FormData(form).entries()); }
@@ -1387,8 +1522,8 @@
   id("supplierForm").onsubmit=e=>{e.preventDefault();saveForm("saveSupplierPayment",e.target,"supplierModal")};
 
   function fillForm(form,obj){Object.entries(obj).forEach(([k,v])=>{if(form.elements[k])form.elements[k].value=v??""})}
-  function editProject(x){const o=state.projects.find(i=>String(i.id)===String(x));fillForm(id("projectForm"),o);openModal("projectModal")}
-  function editReceipt(x){const o=state.receipts.find(i=>String(i.id)===String(x));fillForm(id("receiptForm"),o);toggleCardFields(id("receiptForm"));openModal("receiptModal")}
+  function editProject(x){const o=state.projects.find(i=>String(i.id)===String(x));fillForm(id("projectForm"),o);id("projectModal").querySelector(".modal-head strong").textContent="Editar projeto";openModal("projectModal")}
+  function editReceipt(x){const o=state.receipts.find(i=>String(i.id)===String(x));fillForm(id("receiptForm"),o);id("receiptModal").querySelector(".modal-head strong").textContent="Editar parcela / recebimento";toggleCardFields(id("receiptForm"));openModal("receiptModal")}
   function editSale(x){const o=state.sales.find(i=>String(i.id)===String(x));fillForm(id("saleForm"),o);openModal("saleModal")}
   function editSupplier(x){const o=state.supplierPayments.find(i=>String(i.id)===String(x));fillForm(id("supplierForm"),o);openModal("supplierModal")}
   async function deleteItem(type,itemId){ if(!confirm("Deseja realmente excluir este registro?"))return; try{await api("deleteItem",{type,id:itemId},"POST");await loadAll()}catch(e){alert(e.message)} }
@@ -1420,7 +1555,12 @@
       const previsto=db.receipts.filter(x=>x.projetoId===p.id&&x.status!=="Cancelado").reduce((a,x)=>a+Number(x.valorPrevisto||0),0);
       return {projetoId:p.id,antecipado:Number(p.valorAntecipado||0),recebido:rec,vendas,pago,saldoCaixa:rec-pago,aReceber:Math.max(0,previsto-rec)};
     });
-    if(action==="bootstrap") return Promise.resolve({...db,summary:calc()});
+    if(action==="bootstrap") return Promise.resolve({...db,summary:calc(),paymentAlerts:db.supplierPayments.filter(x=>x.status==="Agendado").map(x=>({...x,diasRestantes:10}))});
+    if(action==="sendReportEmail"||action==="sendPaymentAlert") return Promise.resolve(true);
+    if(action==="saveReceipt" && payload.item.forma==="Cartão de crédito parcelado" && !payload.item.id){
+      const it=payload.item,q=Number(it.qtdParcelas||2),total=Number(it.valorPrevisto||0),base=Math.floor(total*100/q),rem=Math.round(total*100)-base*q,created=[];
+      for(let n=1;n<=q;n++){const d=new Date(it.dataCobranca+"T12:00:00");d.setDate(d.getDate()+30*n);const row={...it,id:"R"+Date.now()+"-"+n,parcela:`${n}/${q}`,valorPrevisto:(base+(n<=rem?1:0))/100,valorRecebido:0,dataPrevista:d.toISOString().slice(0,10),dataRecebimento:"",status:"Pendente"};db.receipts.push(row);created.push(row)} return Promise.resolve(created);
+    }
     const maps={saveProject:"projects",saveReceipt:"receipts",saveSale:"sales",saveSupplierPayment:"supplierPayments"};
     if(maps[action]){
       const arr=db[maps[action]], item=payload.item; if(!item.id)item.id=Date.now().toString(); const ix=arr.findIndex(x=>x.id===item.id); if(ix>=0)arr[ix]=item;else arr.push(item);return Promise.resolve(item);
