@@ -864,10 +864,6 @@
       </section>
 
       <section id="projetos" class="section">
-        <div id="integrityBox" class="integrity-box">
-          <div><strong>Integridade dos vínculos</strong><br><span id="integrityText">Validando IDs e relacionamentos...</span></div>
-          <button class="btn btn-light" onclick="refreshIntegrity()">Validar vínculos</button>
-        </div>
         <div class="title-row"><div><h2>Projetos</h2><p>Um projeto pode reunir vários passageiros, vendas e recebimentos.</p></div><button class="btn btn-primary" onclick="openProjectModal()">+ Novo projeto</button></div>
         <div class="card toolbar">
           <input id="filterProject" class="grow" placeholder="Buscar por projeto, cliente, BKO ou consultor">
@@ -1295,7 +1291,6 @@
   function renderAll(){
     renderProjectSelects(); renderProjects(); renderReceipts(); renderSales(); renderSupplier(); renderReport(); renderDashboard(); renderPaymentAlerts(); renderReportProjectSelect();
     renderDetailProjectSelect();
-    renderIntegrity();
     if(selectedDetailProjectId) renderProjectDetail(selectedDetailProjectId);
   }
 
@@ -1619,8 +1614,7 @@
     try{
       const info=await api("auditIntegrity",{},"GET");
       state.integrity=info;
-      renderIntegrity();
-      alert(info.totalIssues ? `Auditoria concluída: ${info.totalIssues} vínculo(s) precisam de revisão.` : "Auditoria concluída: vínculos íntegros.");
+        alert(info.totalIssues ? `Auditoria concluída: ${info.totalIssues} vínculo(s) precisam de revisão.` : "Auditoria concluída: vínculos íntegros.");
     }catch(e){ alert("Erro ao validar vínculos: "+e.message); }
   }
 
