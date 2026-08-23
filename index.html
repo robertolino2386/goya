@@ -1694,9 +1694,12 @@
     const f=e.target;
     try{
       await api("updateReceiptLine",{item:{
-        id:f.id.value, ap:f.ap.value, valorRecebido:f.valorRecebido.value,
-        dataRecebimento:f.dataRecebimento.value, status:f.status.value,
-        observacoes:f.observacoes.value
+        id:f.elements["id"].value,
+        ap:f.elements["ap"].value,
+        valorRecebido:f.elements["valorRecebido"].value,
+        dataRecebimento:f.elements["dataRecebimento"].value,
+        status:f.elements["status"].value,
+        observacoes:f.elements["observacoes"].value
       }},"POST");
       closeModal("receiptEditModal");
       await loadAll();
@@ -1717,15 +1720,15 @@
     if(!o)return;
     const f=id("receiptEditForm");
     f.reset();
-    f.id.value=o.id||"";
-    f.idDisplay.value=o.id||"";
-    f.parcela.value=o.parcela||"1 de 1";
-    f.ap.value=o.ap||"";
-    f.valorPrevistoDisplay.value=money(o.valorPrevisto||0);
-    f.valorRecebido.value=formatMoneyFieldValue(o.valorRecebido||0);
-    f.dataRecebimento.value=o.dataRecebimento||"";
-    f.status.value=o.status||"Pendente";
-    f.observacoes.value=o.observacoes||"";
+    f.elements["id"].value=o.id||"";
+    f.elements["idDisplay"].value=o.id||"";
+    f.elements["parcela"].value=o.parcela||"1 de 1";
+    f.elements["ap"].value=o.ap||"";
+    f.elements["valorPrevistoDisplay"].value=money(o.valorPrevisto||0);
+    f.elements["valorRecebido"].value=formatMoneyFieldValue(o.valorRecebido||0);
+    f.elements["dataRecebimento"].value=o.dataRecebimento||"";
+    f.elements["status"].value=o.status||"Pendente";
+    f.elements["observacoes"].value=o.observacoes||"";
     bindMoneyInputs(f);
     openModal("receiptEditModal");
   }
