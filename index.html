@@ -1497,7 +1497,7 @@
       <div class="pdf-kpis">${pdfKpi("Projetos",String(state.projects.length))}${pdfKpi("Antecipado",money(totals.advance))}${pdfKpi("Recebido",money(totals.received))}${pdfKpi("Vendas",money(totals.sales))}${pdfKpi("Pago fornecedores",money(totals.paid))}${pdfKpi("Saldo em caixa",money(totals.cash))}</div>
       <h2>Posição consolidada dos projetos</h2><table><thead><tr><th>Projeto</th><th>Cliente</th><th>BKO</th><th>Antecipado</th><th>Recebido</th><th>Vendas</th><th>Pago</th><th>A receber</th><th>Saldo</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
       <h2>Pagamentos próximos</h2><table><thead><tr><th>Projeto</th><th>Fornecedor</th><th>Vencimento</th><th>Valor</th><th>Prazo</th></tr></thead><tbody>${alerts}</tbody></table>
-      <div class="pdf-footer">GOYA BY COPASTUR • Relatório gerencial confidencial</div></div>`;
+      <div class="pdf-footer">GOYA BY COPASTUR • Relatório gerencial confidencial - Desenvolvido por Roberto Lino</div></div>`;
   }
 
   function buildDetailedReportHtml(projectId){
@@ -1514,7 +1514,7 @@
       <h2>Recebimentos e parcelas</h2><table><thead><tr><th>Forma</th><th>Parcela</th><th>Autorização</th><th>Vencimento</th><th>Previsto</th><th>Recebido</th><th>Status</th></tr></thead><tbody>${receiptRows}</tbody></table>
       <h2>Vendas e serviços</h2><table class="pdf-report-table"><thead><tr><th>Venda ID</th><th>Pax</th><th>Serviço</th><th>Fornecedor</th><th>RLOC</th><th>Data</th><th>Venda</th><th>Custo</th><th>Status</th></tr></thead><tbody>${saleRows}</tbody></table>
       <h2>Pagamentos a fornecedores</h2><table><thead><tr><th>Fornecedor</th><th>RLOC</th><th>Data</th><th>Valor</th><th>Comprovante</th><th>Status</th></tr></thead><tbody>${payRows}</tbody></table>
-      <div class="pdf-footer">GOYA BY COPASTUR • Dossiê financeiro do projeto • Documento confidencial</div></div>`;
+      <div class="pdf-footer">GOYA BY COPASTUR • Dossiê financeiro do projeto • Documento confidencial - Desenvolvido por Roberto Lino</div></div>`;
   }
 
   async function exportReportPdf(type){
