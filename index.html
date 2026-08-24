@@ -1598,17 +1598,6 @@
     }
   }
 
-      await api("sendReportEmail",{
-        reportType:type,
-        projectId,
-        recipientEmail
-      },"POST");
-
-      alert("Relatório enviado com sucesso para "+recipientEmail+".");
-    }catch(e){
-      alert(e.message);
-    }
-  }
 
   async function sendPaymentToFinance(paymentId){
     try{if(!confirm("Enviar agora este pagamento agendado para o Financeiro?"))return;await api("sendPaymentAlert",{paymentId},"POST");alert("Alerta enviado ao Financeiro.");await loadAll();}catch(e){alert(e.message)}
