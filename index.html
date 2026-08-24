@@ -1560,17 +1560,43 @@
 
   async function sendReportByEmail(type){
     try{
-      const projectId=type==="detalhado"?id("reportProjectSelect").value:"";
-      if(type==="detalhado"&&!projectId)throw new Error("Selecione o projeto.");
+      const projectId = type === "detalhado" ? id("reportProjectSelect").value : "";
 
-      const email=prompt("Digite o e-mail de quem receberá o relatório:","");
-      if(email===null)return;
+      if(type === "detalhado" && !projectId){
+        throw new Error("Selecione o projeto.");
+      }
 
-      const recipientEmail=String(email).trim();
-      if(!recipientEmail)throw new Error("Informe o e-mail do destinatário.");
+      const email = prompt("Digite o e-mail de quem receberá o relatório:", "");
+      if(email === null) return;
+
+      const recipientEmail = String(email).trim().toLowerCase();
+
+      if(!recipientEmail){
+        throw new Error("Informe o e-mail do destinatário.");
+      }
+
       if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail)){
         throw new Error("Informe um endereço de e-mail válido.");
       }
+
+      const response = await api("sendReportEmail", {
+        reportType: type,
+        projectId: projectId,
+        recipientEmail: recipientEmail
+      }, "POST");
+
+      if(response && response.to && String(response.to).toLowerCase() !== recipientEmail){
+        throw new Error(
+          "O servidor confirmou um destinatário diferente do informado. " +
+          "Esperado: " + recipientEmail + " | Retornado: " + response.to
+        );
+      }
+
+      alert("Relatório enviado com sucesso para " + recipientEmail + ".");
+    }catch(e){
+      alert(e.message);
+    }
+  }
 
       await api("sendReportEmail",{
         reportType:type,
