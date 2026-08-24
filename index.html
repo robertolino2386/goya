@@ -804,6 +804,21 @@
     .pdf-report-table .money-col{width:10%}
     .pdf-report-table .status-col{width:9%}
 
+
+    .system-footer{
+      margin:28px 0 6px;
+      padding:18px 12px 8px;
+      border-top:1px solid var(--border);
+      text-align:center;
+      color:var(--muted);
+      font-size:10px;
+      letter-spacing:.04em;
+    }
+    .system-footer strong{
+      color:var(--primary);
+      font-weight:600;
+    }
+
     @media(max-width:1100px){
       .kpis{grid-template-columns:repeat(2,1fr)}
       .two-col{grid-template-columns:1fr}
@@ -1098,6 +1113,10 @@
         <div id="reportPrintMount"></div>
       </section>
     </div>
+
+      <footer class="system-footer">
+        Desenvolvido Por: <strong>Roberto Lino</strong>
+      </footer>
   </main>
 </div>
 
