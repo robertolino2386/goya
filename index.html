@@ -1466,7 +1466,7 @@
       if(Number(s.pago)>Number(s.recebido)) alerts.push(`Projeto <strong>${esc(p.nomeProjeto)}</strong> possui pagamento a fornecedor maior que o valor efetivamente recebido.`);
       if(Number(s.aReceber)>0) alerts.push(`Projeto <strong>${esc(p.nomeProjeto)}</strong> ainda possui ${money(s.aReceber)} a receber.`);
     });
-    (state.paymentAlerts||[]).forEach(a=>alerts.unshift(`Pagamento de <strong>${money(a.valor)}</strong> para <strong>${esc(a.fornecedor)}</strong> vence em ${a.diasRestantes} dia(s) no projeto ${esc(projectName(a.projetoId))}.`));
+    (state.paymentAlerts||[]).forEach(a=>alerts.unshift(`Pagamento de <strong>${money(a.valor)}</strong> para <strong>${esc(a.fornecedor)}</strong> vence em ${Number.isFinite(Number(a.diasRestantes))?Number(a.diasRestantes):"-"} dia(s) no projeto ${esc(projectName(a.projetoId))}.`));
     id("alerts").innerHTML=alerts.length?alerts.slice(0,10).map(a=>`<div class="mini" style="margin-bottom:9px">${a}</div>`).join(""):'<div class="mini">Nenhum alerta financeiro no momento.</div>';
   }
 
@@ -1475,7 +1475,7 @@
   function renderPaymentAlerts(){
     const box=id("paymentAlertBoard"); if(!box) return;
     const alerts=state.paymentAlerts||[];
-    box.innerHTML=alerts.length?alerts.map(a=>`<div class="alert-payment"><div><strong>${esc(projectName(a.projetoId))} • ${esc(a.fornecedor)}</strong><p>Pagamento agendado para ${esc(a.dataPagamento)} • ${money(a.valor)} ${a.rloc?`• RLOC ${esc(a.rloc)}`:""}</p></div><div class="days">${a.diasRestantes} dia(s)</div></div>`).join(""):'<div class="mini">Nenhum pagamento entra na janela de alerta dos próximos 15 dias.</div>';
+    box.innerHTML=alerts.length?alerts.map(a=>`<div class="alert-payment"><div><strong>${esc(projectName(a.projetoId))} • ${esc(a.fornecedor)}</strong><p>Pagamento agendado para ${fmtDateBR(a.dataPagamento)} • ${money(a.valor)} ${a.rloc?`• RLOC ${esc(a.rloc)}`:""}</p></div><div class="days">${Number.isFinite(Number(a.diasRestantes))?Number(a.diasRestantes):"-"} dia(s)</div></div>`).join(""):'<div class="mini">Nenhum pagamento entra na janela de alerta dos próximos 15 dias.</div>';
   }
 
   function renderReportProjectSelect(){
@@ -1492,12 +1492,12 @@
   function buildConsolidatedReportHtml(){
     const totals={advance:state.projects.reduce((a,p)=>a+Number(p.valorAntecipado||0),0),received:state.summary.reduce((a,s)=>a+Number(s.recebido||0),0),sales:state.summary.reduce((a,s)=>a+Number(s.vendas||0),0),paid:state.summary.reduce((a,s)=>a+Number(s.pago||0),0),receivable:state.summary.reduce((a,s)=>a+Number(s.aReceber||0),0),cash:state.summary.reduce((a,s)=>a+Number(s.saldoCaixa||0),0)};
     const rows=state.projects.map(p=>{const s=summaryByProject(p.id);return `<tr><td>${esc(p.nomeProjeto)}</td><td>${esc(p.cliente)}</td><td>${esc(p.bko)}</td><td>${money(p.valorAntecipado)}</td><td>${money(s.recebido)}</td><td>${money(s.vendas)}</td><td>${money(s.pago)}</td><td>${money(s.aReceber)}</td><td>${money(s.saldoCaixa)}</td><td>${esc(p.status)}</td></tr>`}).join("");
-    const alerts=(state.paymentAlerts||[]).map(a=>`<tr><td>${esc(projectName(a.projetoId))}</td><td>${esc(a.fornecedor)}</td><td>${fmtDateBR(a.dataPagamento)}</td><td>${money(a.valor)}</td><td>${a.diasRestantes} dia(s)</td></tr>`).join("")||'<tr><td colspan="5">Sem pagamentos na janela de alerta.</td></tr>';
+    const alerts=(state.paymentAlerts||[]).map(a=>`<tr><td>${esc(projectName(a.projetoId))}</td><td>${esc(a.fornecedor)}</td><td>${fmtDateBR(a.dataPagamento)}</td><td>${money(a.valor)}</td><td>${Number.isFinite(Number(a.diasRestantes))?Number(a.diasRestantes):"-"} dia(s)</td></tr>`).join("")||'<tr><td colspan="5">Sem pagamentos na janela de alerta.</td></tr>';
     return `<div class="pdf-report">${reportHeader("Relatório Executivo Consolidado","Gestão de Projetos e Antecipações")}
       <div class="pdf-kpis">${pdfKpi("Projetos",String(state.projects.length))}${pdfKpi("Antecipado",money(totals.advance))}${pdfKpi("Recebido",money(totals.received))}${pdfKpi("Vendas",money(totals.sales))}${pdfKpi("Pago fornecedores",money(totals.paid))}${pdfKpi("Saldo em caixa",money(totals.cash))}</div>
       <h2>Posição consolidada dos projetos</h2><table><thead><tr><th>Projeto</th><th>Cliente</th><th>BKO</th><th>Antecipado</th><th>Recebido</th><th>Vendas</th><th>Pago</th><th>A receber</th><th>Saldo</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
       <h2>Pagamentos próximos</h2><table><thead><tr><th>Projeto</th><th>Fornecedor</th><th>Vencimento</th><th>Valor</th><th>Prazo</th></tr></thead><tbody>${alerts}</tbody></table>
-      <div class="pdf-footer">GOYA BY COPASTUR • Relatório gerencial confidencial - Desenvolvido por Roberto Lino</div></div>`;
+      <div class="pdf-footer">GOYA BY COPASTUR • Relatório gerencial confidencial</div></div>`;
   }
 
   function buildDetailedReportHtml(projectId){
@@ -1514,7 +1514,7 @@
       <h2>Recebimentos e parcelas</h2><table><thead><tr><th>Forma</th><th>Parcela</th><th>Autorização</th><th>Vencimento</th><th>Previsto</th><th>Recebido</th><th>Status</th></tr></thead><tbody>${receiptRows}</tbody></table>
       <h2>Vendas e serviços</h2><table class="pdf-report-table"><thead><tr><th>Venda ID</th><th>Pax</th><th>Serviço</th><th>Fornecedor</th><th>RLOC</th><th>Data</th><th>Venda</th><th>Custo</th><th>Status</th></tr></thead><tbody>${saleRows}</tbody></table>
       <h2>Pagamentos a fornecedores</h2><table><thead><tr><th>Fornecedor</th><th>RLOC</th><th>Data</th><th>Valor</th><th>Comprovante</th><th>Status</th></tr></thead><tbody>${payRows}</tbody></table>
-      <div class="pdf-footer">GOYA BY COPASTUR • Dossiê financeiro do projeto • Documento confidencial - Desenvolvido por Roberto Lino</div></div>`;
+      <div class="pdf-footer">GOYA BY COPASTUR • Dossiê financeiro do projeto • Documento confidencial</div></div>`;
   }
 
   async function exportReportPdf(type){
